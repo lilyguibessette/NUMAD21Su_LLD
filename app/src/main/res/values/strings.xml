@@ -6,4 +6,7 @@
     <string name="send_sticker_confirm">Sticker Sent!</string>
     <string name="send_sticker_error">Invalid Username. Retry.</string>
     <string name="username">Username</string>
+    <string name="welcome">Hello, welcome back!</string>
+    <string name="enter_username">Enter your username</string>
+    <string name="login_button">LOGIN</string>
 </resources>

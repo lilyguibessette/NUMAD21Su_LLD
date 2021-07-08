@@ -2,6 +2,9 @@ package edu.neu.madcourse.numad21su_lld;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 public class MainActivity extends AppCompatActivity {
     public String my_username;
     private static final String USERNAME = "USERNAME";
+    Button login_button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,6 +22,17 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         } else {
             setContentView(R.layout.activity_login);
+
+            login_button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    my_username = ((EditText) findViewById(R.id.enter_username)).getText().toString();
+                    Intent intent = new Intent(MainActivity.this, ReceivedActivity.class);
+                    startActivity(intent);
+                }
+            });
+            Intent intent = new Intent(MainActivity.this, ReceivedActivity.class);
+            startActivity(intent);
         }
         // maybe make this a login screen and if logged in before then go to received activity
         // here need to send token and username to database
@@ -33,5 +48,4 @@ public class MainActivity extends AppCompatActivity {
         outState.putString(USERNAME, my_username);
         super.onSaveInstanceState(outState);
     }
-
 }
