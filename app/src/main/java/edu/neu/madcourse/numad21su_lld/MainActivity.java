@@ -17,13 +17,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login);
         if (savedInstanceState != null && savedInstanceState.containsKey(USERNAME)) {
             Intent intent = new Intent(MainActivity.this, ReceivedActivity.class);
             startActivity(intent);
-        } else {
-            setContentView(R.layout.activity_login);
-
-            login_button.setOnClickListener(new View.OnClickListener() {
+        }
+        login_button = findViewById(R.id.login_button);
+        login_button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     my_username = ((EditText) findViewById(R.id.enter_username)).getText().toString();
@@ -31,8 +31,6 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(intent);
                 }
             });
-            Intent intent = new Intent(MainActivity.this, ReceivedActivity.class);
-            startActivity(intent);
         }
         // maybe make this a login screen and if logged in before then go to received activity
         // here need to send token and username to database
@@ -41,11 +39,13 @@ public class MainActivity extends AppCompatActivity {
         // username -> number received
         // username -> sticker, username pairs, timestamp?
         //          -> so that users can send same sticker multiple times?
-    }
+
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
-        outState.putString(USERNAME, my_username);
+        if (my_username != null) {
+            outState.putString(USERNAME, my_username);
+        }
         super.onSaveInstanceState(outState);
     }
 }

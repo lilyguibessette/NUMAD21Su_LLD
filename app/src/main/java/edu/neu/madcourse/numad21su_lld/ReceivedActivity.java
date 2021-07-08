@@ -35,8 +35,6 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
 
     //private static final String SERVER_KEY = "key=AAAA5-WnK0Y:APA91bGSNkJBv6lna--2EgJvdjxNtxt1eUc8yTKroB8nKJ3Tq_VSrWjSDFJ4ydON6OxM5sRr8QRNcnnZAXiTTzTL6dib9_XJIJEGe75h0oHKjrbvJMENomYQuZZUq0OiDrksuKPffK74";
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -145,16 +143,14 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
     }
 
     private void init(Bundle savedInstanceState) {
-        initialItemData(savedInstanceState);
+        initialStickerData(savedInstanceState);
         createRecyclerView();
     }
 
-    private void initialItemData(Bundle savedInstanceState) {
+    private void initialStickerData(Bundle savedInstanceState) {
         if (savedInstanceState != null && savedInstanceState.containsKey(NUMBER_OF_STICKERS)) {
             if (stickerHistory == null || stickerHistory.size() == 0) {
-
                 int size = savedInstanceState.getInt(NUMBER_OF_STICKERS);
-
                 // Retrieve keys we stored in the instance
                 for (int i = 0; i < size; i++) {
                     String username = savedInstanceState.getString(KEY_OF_STICKER + i + "0");

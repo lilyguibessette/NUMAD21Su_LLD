@@ -1,12 +1,12 @@
 <resources>
     <string name="app_name">NUMAD21Su_LLD</string>
     <string name="cancel">Cancel</string>
-    <string name="add_link">Send Sticker</string>
     <string name="send_sticker">Send Sticker</string>
     <string name="send_sticker_confirm">Sticker Sent!</string>
     <string name="send_sticker_error">Invalid Username. Retry.</string>
     <string name="username">Username</string>
-    <string name="welcome">Hello, welcome back!</string>
+    <string name="sticker">Sticker</string>
+    <string name="welcome">Welcome! Enter your username.</string>
     <string name="enter_username">Enter your username</string>
     <string name="login_button">LOGIN</string>
 </resources>
