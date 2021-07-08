@@ -1,23 +1,25 @@
 package edu.neu.madcourse.numad21su_lld;
 
-        import android.app.Dialog;
-        import android.content.Intent;
-        import android.net.Uri;
-        import android.os.Bundle;
-        import android.view.View;
-        import android.widget.EditText;
-        import android.widget.Toast;
+import android.app.Dialog;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.Toast;
 
-        import androidx.annotation.NonNull;
-        import androidx.appcompat.app.AppCompatActivity;
-        import androidx.fragment.app.DialogFragment;
-        import androidx.recyclerview.widget.ItemTouchHelper;
-        import androidx.recyclerview.widget.LinearLayoutManager;
-        import androidx.recyclerview.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-        import com.google.android.material.floatingactionbutton.FloatingActionButton;
-        import com.google.android.material.snackbar.Snackbar;
-        import java.util.ArrayList;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
+
+import java.util.ArrayList;
 
 
 public class ReceivedActivity extends AppCompatActivity implements SendStickerDialogFragment.SendStickerDialogListener {
@@ -30,11 +32,20 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
     private static final String KEY_OF_STICKER = "KEY_OF_STICKER";
     private static final String NUMBER_OF_STICKERS = "NUMBER_OF_STICKERS";
 
+    private static final String TAG = ReceivedActivity.class.getSimpleName();
+    private static String SERVER_KEY;
+    private static String CLIENT_REGISTRATION_TOKEN;
+
+    //private static final String SERVER_KEY = "key=AAAA5-WnK0Y:APA91bGSNkJBv6lna--2EgJvdjxNtxt1eUc8yTKroB8nKJ3Tq_VSrWjSDFJ4ydON6OxM5sRr8QRNcnnZAXiTTzTL6dib9_XJIJEGe75h0oHKjrbvJMENomYQuZZUq0OiDrksuKPffK74";
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         init(savedInstanceState);
+
 
         //TODO Add in layout button
         sendStickerButton = findViewById(R.id.sendStickerButton);
@@ -63,12 +74,17 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
 
         itemTouchHelper.attachToRecyclerView(stickerRecyclerView);
 
+        SERVER_KEY = "key=" + Utils.getProperties(getApplicationContext()).getProperty("SERVER_KEY");
+
+
         // TODO Configure receiving from database the list of stickers
         // Need to add these to when receiving from database
         // --- stickerHistory.add(0, new StickerCard(username, sticker));
         // --- receivedStickerAdapter.notifyItemInserted(0);
         // Also need to keep track of number received and sent
     }
+
+
 
     public void startSendDialog() {
         DialogFragment sendDialog = new SendStickerDialogFragment();
