@@ -13,6 +13,7 @@ public class ReceivedStickerHolder extends RecyclerView.ViewHolder {
     public ReceivedStickerHolder(View stickerHistoryView) {
         super(stickerHistoryView);
         username = stickerHistoryView.findViewById(R.id.username);
+        //TODO make it a image/string keyvalue pair thing
         //sticker = stickerHistoryView.findViewById(R.id.sticker);
     }
 
