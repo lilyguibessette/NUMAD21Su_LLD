@@ -15,16 +15,16 @@
         android:hint="@string/username"
         android:inputType="text" />
 
-    <EditText
-        android:id="@+id/sticker"
+    <Spinner
+        android:id="@+id/sticker_spinner"
         android:layout_width="396dp"
         android:layout_height="63dp"
         android:layout_marginLeft="4dp"
         android:layout_marginTop="4dp"
         android:layout_marginRight="4dp"
         android:layout_marginBottom="16dp"
-        android:autofillHints="@string/sticker"
-        android:fontFamily="sans-serif"
-        android:hint="@string/sticker"
-        android:inputType="textUri" />
+        android:entries="@array/sticker_array"
+        android:fadeScrollbars="false"
+        android:spinnerMode="dropdown" />
+
 </LinearLayout>

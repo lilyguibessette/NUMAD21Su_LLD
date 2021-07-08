@@ -43,9 +43,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
         if (my_username != null) {
             outState.putString(USERNAME, my_username);
         }
-        super.onSaveInstanceState(outState);
     }
 }

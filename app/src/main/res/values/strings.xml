@@ -9,4 +9,20 @@
     <string name="welcome">Welcome! Enter your username.</string>
     <string name="enter_username">Enter your username</string>
     <string name="login_button">LOGIN</string>
+
+    <string-array name="sticker_array">
+        <item>AEROSOL</item>
+        <item>CAPSULE</item>
+        <item>CHEWABLE</item>
+        <item>CREAM</item>
+        <item>INHALANT</item>
+        <item>INJECTION</item>
+        <item>OINTMENT</item>
+        <item>LIQUID</item>
+        <item>LOTION</item>
+        <item>POWDER</item>
+        <item>TABLET</item>
+    </string-array>
+
+
 </resources>

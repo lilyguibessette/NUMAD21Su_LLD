@@ -3,7 +3,9 @@ package edu.neu.madcourse.numad21su_lld;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -44,6 +46,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
 
         //TODO Add in layout button
         sendStickerButton = findViewById(R.id.sendStickerButton);
+        sendStickerButton.setTooltipText("Send a Sticker");
         sendStickerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -92,8 +95,18 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         String username = ((EditText) addSendDialog.findViewById(R.id.username)).getText().toString();
         // Need to figure out how to select icons and associate them with a string/enum
         // TODO currently just have stickers as text/string but need to change to icon
-        String sticker = ((EditText) addSendDialog.findViewById(R.id.sticker)).getText().toString();
-
+        // https://stackoverflow.com/questions/13151847/how-to-add-image-to-spinner-in-android
+        Spinner sticker_spinner = addSendDialog.findViewById(R.id.sticker_spinner);
+        sticker_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String[] sticker_choices = getResources().getStringArray(R.array.sticker_array);
+                String sticker = sticker_choices[position];
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
 
         // TODO put this in thread
         // --------------

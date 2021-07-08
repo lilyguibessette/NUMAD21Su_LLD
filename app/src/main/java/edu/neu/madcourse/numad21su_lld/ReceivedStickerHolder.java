@@ -13,7 +13,7 @@ public class ReceivedStickerHolder extends RecyclerView.ViewHolder {
     public ReceivedStickerHolder(View stickerHistoryView) {
         super(stickerHistoryView);
         username = stickerHistoryView.findViewById(R.id.username);
-        sticker = stickerHistoryView.findViewById(R.id.sticker);
+        //sticker = stickerHistoryView.findViewById(R.id.sticker);
     }
 
 
