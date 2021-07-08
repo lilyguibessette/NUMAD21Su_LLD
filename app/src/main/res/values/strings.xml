@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">NUMAD21Su_LLD</string>
+    <string name="cancel">Cancel</string>
+    <string name="add_link">Send Sticker</string>
+    <string name="send_sticker">Send Sticker</string>
 </resources>
