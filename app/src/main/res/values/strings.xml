@@ -13,7 +13,7 @@
     <string name="back">Back</string>
     <string name="token">Client Token</string>
     <string name="number_sent">Number Stickers Sent</string>
-
+    <string name="new_msg">New message from : </string>
     <string-array name="sticker_array">
         <item>coffee</item>
         <item>donut</item>

@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -19,6 +20,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -131,7 +134,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
 
     public void onDialogPositiveClick(DialogFragment sendDialog) {
         Dialog addSendDialog = sendDialog.getDialog();
-        String username = ((EditText) addSendDialog.findViewById(R.id.username)).getText().toString();
+        String other_username = ((EditText) addSendDialog.findViewById(R.id.username)).getText().toString();
         // Need to figure out how to select icons and associate them with a string/enum
         // TODO currently just have stickers as text/string but need to change to icon
         // https://stackoverflow.com/questions/3609231/how-is-it-possible-to-create-a-spinner-with-images-instead-of-text
@@ -154,12 +157,12 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         // do this in another thread?
 
         // need to change here to some sort of validation that the username exists in the database
-        if (isValidUsername(username)) {
+        if (isValidUsername(other_username)) {
             sendDialog.dismiss();
             // add to database as well here
             // TODO
 
-
+            sendNotification(other_username);
             View parentLayout = findViewById(android.R.id.content);
             Snackbar.make(parentLayout, R.string.send_sticker_confirm, Snackbar.LENGTH_SHORT)
                     .setAction("Action", null).show();
@@ -319,6 +322,35 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
 
     }
 
+
+
+    public void sendNotification(String other_username) {
+        // Prepare intent which is triggered if the
+        // notification is selected
+        Intent intent = new Intent(this, ReceiveNotificationActivity.class);
+        PendingIntent pIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, 0);
+        //PendingIntent callIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(),
+        //       new Intent(this, FakeCallActivity.class), 0);
+
+
+        // Build notification
+        // Need to define a channel ID after Android Oreo
+        String channelId = other_username;
+        NotificationCompat.Builder notifyBuild = new NotificationCompat.Builder(this, channelId)
+                //"Notification icons must be entirely white."
+                .setSmallIcon(R.drawable.coffee)
+                .setContentTitle("New mail from " + "test@test.com")
+                .setContentText("Subject")
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                // hide the notification after its selected
+                .setAutoCancel(true)
+                //.addAction(R.drawable.coffee, "Call", callIntent)
+                .setContentIntent(pIntent);
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        // // notificationId is a unique int for each notification that you must define
+        notificationManager.notify(0, notifyBuild.build());
+    }
 
 }
 
