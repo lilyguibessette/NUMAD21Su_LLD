@@ -7,6 +7,8 @@ import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
+//TODO https://abhiandroid.com/ui/custom-spinner-examples.html
+// Add a linear layout for the spinner itself and I think then this will work
 public class ImageArrayAdapter extends ArrayAdapter<Integer> {
     private Integer[] images;
 
