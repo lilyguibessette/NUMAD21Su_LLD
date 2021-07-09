@@ -191,6 +191,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
             @Override
             public void onCancelled(@NonNull @NotNull DatabaseError error) {
                 Toast.makeText(ReceivedActivity.this, "Fail to get data.", Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "Cancelled, failed to get: " + other_username);
             }
         });
 
