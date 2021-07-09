@@ -2,6 +2,11 @@ package edu.neu.madcourse.numad21su_lld;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -18,12 +23,14 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.ArrayList;
 
@@ -50,17 +57,17 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        init(savedInstanceState);
-/*         SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE);
-       my_username = sharedPreferences.getString("userName", "Not found");
+        SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE);
+        my_username = sharedPreferences.getString("userName", "Not found");
         my_token = sharedPreferences.getString("CLIENT_REGISTRATION_TOKEN", "Not found");
         if(my_username == "Not found" || my_token == "Not found"){
             Intent intent = new Intent(ReceivedActivity.this, MainActivity.class);
             startActivity(intent);
-        }*/
-//        createNotificationChannel();
- //       SERVER_KEY = "key=" + Utils.getProperties(getApplicationContext()).getProperty("SERVER_KEY");
+        }
+        createNotificationChannel();
+        SERVER_KEY = "key=" + Utils.getProperties(getApplicationContext()).getProperty("SERVER_KEY");
         setContentView(R.layout.activity_received_history);
+        init(savedInstanceState);
         sendStickerButton = findViewById(R.id.sendStickerButton);
         sendStickerButton.setTooltipText("Send a Sticker");
         sendStickerButton.setOnClickListener(new View.OnClickListener() {
@@ -237,7 +244,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
             }
         });
     }
-    /*
+
     public void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = my_username;
@@ -266,7 +273,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                     }
                 });
 
-    }*/
+    }
 
 
 }
