@@ -56,17 +56,12 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
     private Button accountInfoButton;
     private String my_username;
     private String my_token;
+    private String sticker_to_send;
     private HashMap<String, Boolean> validatedUsers = new HashMap<>();
-
     private final Handler handler = new Handler();
     private static final String KEY_OF_STICKER = "KEY_OF_STICKER";
     private static final String NUMBER_OF_STICKERS = "NUMBER_OF_STICKERS";
-
     private static final String TAG = ReceivedActivity.class.getSimpleName();
-    //private static String SERVER_KEY;
-    private static String CLIENT_REGISTRATION_TOKEN;
-
-    //private static final String SERVER_KEY = "key=AAAA5-WnK0Y:APA91bGSNkJBv6lna--2EgJvdjxNtxt1eUc8yTKroB8nKJ3Tq_VSrWjSDFJ4ydON6OxM5sRr8QRNcnnZAXiTTzTL6dib9_XJIJEGe75h0oHKjrbvJMENomYQuZZUq0OiDrksuKPffK74";
     private static final String SERVER_KEY = "key=AAAA5-WnK0Y:APA91bGSNkJBv6lna--2EgJvdjxNtxt1eUc8yTKroB8nKJ3Tq_VSrWjSDFJ4ydON6OxM5sRr8QRNcnnZAXiTTzTL6dib9_XJIJEGe75h0oHKjrbvJMENomYQuZZUq0OiDrksuKPffK74";
 
     @Override
@@ -161,12 +156,14 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                         R.drawable.milk,
                         R.drawable.toast,
                         R.drawable.watermelon});
+
         sticker_spinner.setAdapter(adapter);
         sticker_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String[] sticker_choices = getResources().getStringArray(R.array.sticker_array);
-                String sticker = sticker_choices[position];
+                sticker_to_send = sticker_choices[position];
+                Log.e(TAG, sticker_to_send + " CHOSEN STICKER");
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
@@ -174,18 +171,11 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         });
 
         // TODO put this in thread
-        // --------------
-        // do this in another thread?
-
-        // need to change here to some sort of validation that the username exists in the database
         if (isValidUsername(other_username)) {
             sendDialog.dismiss();
-            // add to database as well here
-            // TODO
-            // sendNotification(other_username);
-            String sticker = "coffee"; // test case for now
-            sendSticker(other_username, sticker);
-            sendStickerMessageToDB(other_username, sticker);
+            // TODO transform this to the real sticker IMAGE chosen
+            sendSticker(other_username, sticker_to_send);
+            sendStickerMessageToDB(other_username, sticker_to_send);
             View parentLayout = findViewById(android.R.id.content);
             Snackbar.make(parentLayout, R.string.send_sticker_confirm, Snackbar.LENGTH_SHORT)
                     .setAction("Action", null).show();

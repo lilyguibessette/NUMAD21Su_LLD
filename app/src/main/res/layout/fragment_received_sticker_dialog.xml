@@ -1,5 +1,6 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
@@ -9,7 +10,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="@drawable/coffee"/>
+        android:contentDescription="@string/sticker"
+        app:srcCompat="@drawable/coffee" />
 
     <Space
         android:layout_width="match_parent"
@@ -20,8 +22,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:textSize="18sp"
-        android:text="username"/>
+        android:text="@string/username"
+        android:textSize="18sp" />
 
     <Space
         android:layout_width="match_parent"
@@ -32,7 +34,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:textSize="24sp"
-        android:text="Sent you a sticker!"/>
+        android:text="@string/notif_sticker"
+        android:textSize="24sp" />
 
 </LinearLayout>

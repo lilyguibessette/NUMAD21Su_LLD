@@ -16,6 +16,7 @@
     <string name="close">Close</string>
     <string name="send_sticker_back">Send Sticker Back!</string>
     <string name="new_msg">New message from : </string>
+    <string name ="notif_sticker">Sent you a sticker!</string>
 
     <string-array name="sticker_array">
         <item>coffee</item>
