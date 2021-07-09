@@ -132,12 +132,26 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
     public void onDialogPositiveClick(DialogFragment sendDialog) {
         Dialog addSendDialog = sendDialog.getDialog();
         String username = ((EditText) addSendDialog.findViewById(R.id.username)).getText().toString();
+
         // Need to figure out how to select icons and associate them with a string/enum
         // TODO currently just have stickers as text/string but need to change to icon
         // https://stackoverflow.com/questions/3609231/how-is-it-possible-to-create-a-spinner-with-images-instead-of-text
         // https://stackoverflow.com/questions/13151847/how-to-add-image-to-spinner-in-android
         Spinner sticker_spinner = addSendDialog.findViewById(R.id.sticker_spinner);
+
+        ImageArrayAdapter adapter = new ImageArrayAdapter(this, new Integer[] {
+                        R.drawable.coffee,
+                        R.drawable.donut,
+                        R.drawable.egg,
+                        R.drawable.french_fries,
+                        R.drawable.hamburger,
+                        R.drawable.ice_cream,
+                        R.drawable.milk,
+                        R.drawable.toast,
+                        R.drawable.watermelon});
+        sticker_spinner.setAdapter(adapter);
         sticker_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String[] sticker_choices = getResources().getStringArray(R.array.sticker_array);
@@ -158,14 +172,13 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
             sendDialog.dismiss();
             // add to database as well here
             // TODO
-
-
             View parentLayout = findViewById(android.R.id.content);
             Snackbar.make(parentLayout, R.string.send_sticker_confirm, Snackbar.LENGTH_SHORT)
                     .setAction("Action", null).show();
         } else {
             //invalid username
-            Toast.makeText(ReceivedActivity.this, R.string.send_sticker_error, Toast.LENGTH_SHORT).show();
+            Toast.makeText(ReceivedActivity.this, R.string.send_sticker_error,
+                    Toast.LENGTH_SHORT).show();
         }
         // --------------
     }
@@ -177,8 +190,9 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
             Log.d(TAG, "Already Validated: " + other_username);
             return true;
         }
+
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myUserRef = database.getReference("Users/"+other_username);
+        DatabaseReference myUserRef = database.getReference("Users/" + other_username);
         myUserRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -190,7 +204,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
             }
             @Override
             public void onCancelled(@NonNull @NotNull DatabaseError error) {
-                Toast.makeText(ReceivedActivity.this, "Fail to get data.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ReceivedActivity.this, "Failed to get data.", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -205,7 +219,6 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
     public void onDialogNegativeClick(DialogFragment sendDialog) {
         sendDialog.dismiss();
     }
-
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {

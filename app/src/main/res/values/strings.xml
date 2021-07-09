@@ -13,6 +13,8 @@
     <string name="back">Back</string>
     <string name="token">Client Token</string>
     <string name="number_sent">Number Stickers Sent</string>
+    <string name="close">Close</string>
+    <string name="send_sticker_back">Send Sticker Back!</string>
 
     <string-array name="sticker_array">
         <item>coffee</item>

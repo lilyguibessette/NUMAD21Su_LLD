@@ -99,7 +99,6 @@ public class MainActivity extends AppCompatActivity {
                 myEdit.putString("userName", my_username);
                 myEdit.putString("CLIENT_REGISTRATION_TOKEN", CLIENT_REGISTRATION_TOKEN);
                 myEdit.commit();
-
                 startActivity(intent);
             }
         });
