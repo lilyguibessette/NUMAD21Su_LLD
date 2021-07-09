@@ -349,8 +349,8 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                 // notification is selected
                 Intent intent = new Intent(ReceivedActivity.this, ReceiveNotificationActivity.class);
                 PendingIntent pIntent = PendingIntent.getActivity(ReceivedActivity.this, (int) System.currentTimeMillis(), intent, 0);
-                //PendingIntent callIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(),
-                //       new Intent(this, FakeCallActivity.class), 0);
+                PendingIntent callIntent = PendingIntent.getActivity(ReceivedActivity.this, (int) System.currentTimeMillis(),
+                       new Intent(ReceivedActivity.this, ReceiveNotificationActivity.class), 0);
 
                 // Build notification
                 // Need to define a channel ID after Android Oreo
@@ -363,7 +363,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                         .setPriority(NotificationCompat.PRIORITY_HIGH)
                         // hide the notification after its selected
                         .setAutoCancel(true)
-                        //.addAction(R.drawable.coffee, "Call", callIntent)
+                        .addAction(R.drawable.coffee, "Call", callIntent)
                         .setContentIntent(pIntent);
                 NotificationManagerCompat notificationManager = NotificationManagerCompat.from(ReceivedActivity.this);
                 // // notificationId is a unique int for each notification that you must define
