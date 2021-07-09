@@ -1,31 +1,29 @@
 package edu.neu.madcourse.numad21su_lld;
 
-import android.graphics.drawable.Drawable;
-
 public class StickerCard {
     private final String username;
     private final String sticker;
-//    private final Drawable sticker_png;
+    private final int sticker_png_id;
 
-    public StickerCard(String username, String sticker){
+    public StickerCard(String username, String sticker, int sticker_png_id){
         this.username = username;
         this.sticker = sticker;
         // this.sticker_png = getApplicationContext().getResources().getIdentifier(sticker, "drawable", getPackageName());
+        this.sticker_png_id = sticker_png_id;
     }
 
     // https://stackoverflow.com/questions/5254100/how-to-set-an-imageviews-image-from-a-string
-    public StickerCard(String username, Drawable sticker_png){
-        this.username = username;
-   //     this.sticker_png = sticker_png;
-        this.sticker = sticker_png.toString();
-    }
 
     public String getSticker() {
         return this.sticker;
     }
 
-    public String getStickerString() {
-        return this.sticker.toString();
+    public String getStickerPNGID() {
+        return String.valueOf(this.sticker_png_id);
+    }
+
+    public int getPNGid() {
+        return this.sticker_png_id;
     }
 
     public String getUsername() {

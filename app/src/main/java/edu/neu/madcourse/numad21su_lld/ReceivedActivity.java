@@ -7,6 +7,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -57,6 +58,8 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
     private String my_username;
     private String my_token;
     private String sticker_to_send;
+    int received_history_size;
+    DatabaseReference myUserHistoryRef;
     private HashMap<String, Boolean> validatedUsers = new HashMap<>();
     private final Handler handler = new Handler();
     private static final String KEY_OF_STICKER = "KEY_OF_STICKER";
@@ -76,6 +79,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         }
         createNotificationChannel();
         setContentView(R.layout.activity_received_history);
+        received_history_size = 0;
         init(savedInstanceState);
         sendStickerButton = findViewById(R.id.sendStickerButton);
         sendStickerButton.setTooltipText("Send a Sticker");
@@ -233,7 +237,8 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         outState.putInt(NUMBER_OF_STICKERS, size);
         for (int i = 0; i < size; i++) {
             outState.putString(KEY_OF_STICKER + i + "0", stickerHistory.get(i).getUsername());
-            outState.putString(KEY_OF_STICKER + i + "1", stickerHistory.get(i).getStickerString());
+            outState.putString(KEY_OF_STICKER + i + "1", stickerHistory.get(i).getSticker());
+            outState.putString(KEY_OF_STICKER + i + "1", stickerHistory.get(i).getStickerPNGID());
         }
         super.onSaveInstanceState(outState);
     }
@@ -251,7 +256,8 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                 for (int i = 0; i < size; i++) {
                     String username = savedInstanceState.getString(KEY_OF_STICKER + i + "0");
                     String sticker = savedInstanceState.getString(KEY_OF_STICKER + i + "1");
-                    StickerCard StickerCard = new StickerCard(username, sticker);
+                    String sticker_png_id = savedInstanceState.getString(KEY_OF_STICKER + i + "2");
+                    StickerCard StickerCard = new StickerCard(username, sticker, Integer.parseInt( sticker_png_id));
                     stickerHistory.add(StickerCard);
                 }
             }
@@ -469,6 +475,47 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         handler.post(() -> {Toast.makeText(ReceivedActivity.this, "Status from Server: " + resp, Toast.LENGTH_SHORT).show();});
     }
         */
+
+    private void updateHistory() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                myUserHistoryRef = database.getReference("Users/"+my_username);
+                myUserHistoryRef.addValueEventListener(new ValueEventListener() {
+                    public User my_user;
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        my_user = dataSnapshot.getValue(User.class);
+                        // Check size of received history
+                        ArrayList<StickerMessage> received_history = my_user.getReceived_history();
+                        int new_received_history_size = received_history.size();
+                        if (new_received_history_size > received_history_size){
+                            Resources res = getResources();
+                            for (int i = 0; i < new_received_history_size; i++) {
+                                StickerMessage stickerMessage = received_history.get(i);
+                                String username = stickerMessage.getUsername();
+                                String sticker = stickerMessage.getSticker_id();
+                                int pngID = res.getIdentifier(sticker , "drawable", getPackageName());
+                                stickerHistory.add(0, new StickerCard(username, sticker, pngID));
+                                receivedStickerAdapter.notifyItemInserted(0);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        // Getting Post failed, log a message
+                        Log.w(TAG, "my_user sendStickerMessageToDB onCancelled", databaseError.toException());
+                    }
+                });
+
+            }
+        }).start();
+    }
+
+
+
 }
 
 

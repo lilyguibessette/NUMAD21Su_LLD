@@ -14,16 +14,20 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = MainActivity.class.getSimpleName();
     public String my_username;
     private static final String USERNAME = "USERNAME";
     private static String CLIENT_REGISTRATION_TOKEN;
-    //TODO change this from hardcode to a getter
+    //TODO change this from hardcode to a getter/resource or something
     private static String SERVER_KEY = "key=AAAA5-WnK0Y:APA91bGSNkJBv6lna--2EgJvdjxNtxt1eUc8yTKroB8nKJ3Tq_VSrWjSDFJ4ydON6OxM5sRr8QRNcnnZAXiTTzTL6dib9_XJIJEGe75h0oHKjrbvJMENomYQuZZUq0OiDrksuKPffK74\t\n";
     private User userObject;
     Button login_button;
@@ -36,9 +40,7 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, ReceivedActivity.class);
             startActivity(intent);
         }
-
         login_button = findViewById(R.id.login_button);
-
         // Generate the token for the first time, then no need to do later
         FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
             @Override
@@ -68,31 +70,10 @@ public class MainActivity extends AppCompatActivity {
             public void onClick (View view){
                 my_username = ((EditText) findViewById(R.id.enter_username)).getText().toString();
                 userObject = new User(my_username,CLIENT_REGISTRATION_TOKEN);
-
-                // TODO store this username and get this instanceID and send to database
                 Intent intent = new Intent(MainActivity.this, ReceivedActivity.class);
-
                 // Write a message to the database
-                FirebaseDatabase database = FirebaseDatabase.getInstance();
-                DatabaseReference myUserRef = database.getReference("Users");
-                //myUserRef.child(my_username).child("CLIENT_REGISTRATION_TOKEN");
-                myUserRef.child(userObject.username).setValue(userObject);
-
-                // we need to make sure this ^ writes to the database
-               /*
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Task t_user = myUserRef.child(userObject.username).setValue(userObject);
-                        if(!t_user.isSuccessful()){
-                            Toast.makeText(getApplicationContext()
-                                    , "Failed to write user into firebase. Re-enter." , Toast.LENGTH_SHORT).show();
-                            //return;
-                        }
-                    }
-                }).start();
-                */
-
+                // TODO fix because this overwrites all past history -- fixed i think
+                login_user();
                 // Store the userName in shared preferences to skip login if already done
                 SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE);
                 SharedPreferences.Editor myEdit = sharedPreferences.edit();
@@ -102,13 +83,33 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
 
-        // maybe make this a login screen and if logged in before then go to received activity
-        // here need to send token and username to database
-        // database should contain username -> tokens
-        // and then username -> number sent
-        // username -> number received
-        // username -> sticker, username pairs, timestamp?
-        //          -> so that users can send same sticker multiple times?
+
+    private void login_user() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference myUserRef = database.getReference("Users/" + my_username);
+                myUserRef.addValueEventListener(new ValueEventListener() {
+                    public User my_user;
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            my_user = dataSnapshot.getValue(User.class);
+                        } else{
+                            myUserRef.setValue(userObject);
+                        }
+                    }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        // Getting Post failed, log a message
+                        Log.w(TAG, "my_user start login onCancelled", databaseError.toException());
+                    }
+                });
+
+            }
+        }).start();
     }
 }

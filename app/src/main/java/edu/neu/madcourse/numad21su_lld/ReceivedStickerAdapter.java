@@ -23,7 +23,7 @@ public class ReceivedStickerAdapter extends RecyclerView.Adapter<ReceivedSticker
     public void onBindViewHolder(ReceivedStickerHolder holder, int position)  {
         StickerCard currentItem = stickerHistory.get(position);
         holder.username.setText(currentItem.getUsername());
-        holder.sticker.setText(currentItem.getStickerString());
+        holder.sticker_png_id.setImageResource(currentItem.getPNGid());
     }
 
     @Override
