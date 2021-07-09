@@ -11,17 +11,15 @@
     <string name="login_button">LOGIN</string>
 
     <string-array name="sticker_array">
-        <item>AEROSOL</item>
-        <item>CAPSULE</item>
-        <item>CHEWABLE</item>
-        <item>CREAM</item>
-        <item>INHALANT</item>
-        <item>INJECTION</item>
-        <item>OINTMENT</item>
-        <item>LIQUID</item>
-        <item>LOTION</item>
-        <item>POWDER</item>
-        <item>TABLET</item>
+        <item>coffee</item>
+        <item>donut</item>
+        <item>egg</item>
+        <item>french fries</item>
+        <item>hamburger</item>
+        <item>ice cream</item>
+        <item>milk</item>
+        <item>toast</item>
+        <item>watermelon</item>
     </string-array>
 
 

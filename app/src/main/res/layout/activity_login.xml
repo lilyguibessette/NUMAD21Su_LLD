@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/navy">
+    android:background="@color/white">
 
     <ImageView
         android:id="@+id/logo"
@@ -14,7 +14,8 @@
         app:layout_constraintBottom_toTopOf="@id/login_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/muncha_crunch" />
 
     <TextView
         android:id="@+id/login_text"
@@ -22,7 +23,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="@string/welcome"
-        android:textColor="@color/white"
+        android:textColor="@color/navy"
         android:textSize="24sp"
         app:layout_constraintBottom_toTopOf="@+id/enter_username"
         app:layout_constraintEnd_toEndOf="parent"
@@ -36,7 +37,7 @@
         android:layout_height="wrap_content"
         android:autofillHints="@string/enter_username"
         android:hint="@string/enter_username"
-        android:backgroundTint="@color/periwinkle"
+        android:backgroundTint="@color/light_grey"
         android:textAlignment="center"
         android:textColor="@color/white"
         android:textSize="14sp"
@@ -54,14 +55,13 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginBottom="200dp"
-        android:backgroundTint="@null"
+        android:backgroundTint="@color/blush"
         android:text="@string/login_button"
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/enter_username"
-        app:strokeColor="@color/white"
-        app:strokeWidth="1dp" />
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
