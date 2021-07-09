@@ -40,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         }
 
+        login_button = findViewById(R.id.login_button);
+
         // Generate the token for the first time, then no need to do later
         FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
             @Override
@@ -57,8 +59,9 @@ public class MainActivity extends AppCompatActivity {
         });
 
         SharedPreferences sh = getSharedPreferences("MySharedPref", MODE_PRIVATE);
-        my_username = sh.getString("userName", null);;
-        if(my_username != null){
+        my_username = sh.getString("userName", null);
+
+        if (my_username != null) {
             Intent intent = new Intent(MainActivity.this, ReceivedActivity.class);
             startActivity(intent);
         }
@@ -66,59 +69,45 @@ public class MainActivity extends AppCompatActivity {
 
 
         login_button.setOnClickListener(new View.OnClickListener() {
-        } else {
-            setContentView(R.layout.activity_login);
-            login_button = findViewById(R.id.login_button);
-            login_button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    my_username = ((EditText) findViewById(R.id.enter_username)).getText().toString();
+            @Override
+            public void onClick (View view){
+                my_username = ((EditText) findViewById(R.id.enter_username)).getText().toString();
 
-                    // TODO store this username and get this instanceID and send to database
-                    Intent intent = new Intent(MainActivity.this, ReceivedActivity.class);
-                    // Write a message to the database
-                    FirebaseDatabase database = FirebaseDatabase.getInstance();
-                    DatabaseReference myUserRef = database.getReference("Users");
-                    myUserRef.child(my_username).child("CLIENT_REGISTRATION_TOKEN");
+                // TODO store this username and get this instanceID and send to database
+                Intent intent = new Intent(MainActivity.this, ReceivedActivity.class);
 
-                    // Storing data into SharedPreferences
-                    SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref",MODE_PRIVATE);
-                    SharedPreferences.Editor myEdit = sharedPreferences.edit();
+                // Write a message to the database
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference myUserRef = database.getReference("Users");
+                myUserRef.child(my_username).child("CLIENT_REGISTRATION_TOKEN");
 
-                    // Storing the key and its value as the data fetched from edittext
-                    myEdit.putString("userName", my_username);
-
-                    // Once the changes have been made,
-                    // we need to commit to apply those changes made,
-                    // otherwise, it will throw an error
-                    myEdit.commit();
+                // Store the userName in shared preferences to skip login if already done
+                SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE);
+                SharedPreferences.Editor myEdit = sharedPreferences.edit();
+                myEdit.putString("userName", my_username);
+                myEdit.commit();
 
 
+                // Read from the database
+                myUserRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        // This method is called once with the initial value and again
+                        // whenever data at this location is updated.
+                        String value = dataSnapshot.getValue(String.class);
+                        Log.d(TAG, "Value is: " + value);
+                    }
 
-                    // Read from the database
-                    myUserRef.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            // This method is called once with the initial value and again
-                            // whenever data at this location is updated.
-                            String value = dataSnapshot.getValue(String.class);
-                            Toast.makeText(getApplicationContext()
-                                    , value, Toast.LENGTH_SHORT).show();
-                            Log.d(TAG, "Value is: " + value);
-                        }
+                    @Override
+                    public void onCancelled(DatabaseError error) {
+                        // Failed to read value
+                        Log.w(TAG, "Failed to read value.", error.toException());
+                    }
+                });
+                startActivity(intent);
+            }
+        });
 
-                        @Override
-                        public void onCancelled(DatabaseError error) {
-                            // Failed to read value
-                            Log.w(TAG, "Failed to read value.", error.toException());
-                        }
-                    });
-
-                    startActivity(intent);
-                }
-            });
-        }
-        }
         // maybe make this a login screen and if logged in before then go to received activity
         // here need to send token and username to database
         // database should contain username -> tokens
@@ -126,13 +115,5 @@ public class MainActivity extends AppCompatActivity {
         // username -> number received
         // username -> sticker, username pairs, timestamp?
         //          -> so that users can send same sticker multiple times?
-
-
-    @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        if (my_username != null) {
-            outState.putString(USERNAME, my_username);
-        }
     }
 }
