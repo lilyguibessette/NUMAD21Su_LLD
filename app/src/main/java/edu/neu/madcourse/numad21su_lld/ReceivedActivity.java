@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -55,6 +56,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
     private String my_token;
     private HashMap<String, Boolean> validatedUsers = new HashMap<>();
 
+    private final Handler handler = new Handler();
     private static final String KEY_OF_STICKER = "KEY_OF_STICKER";
     private static final String NUMBER_OF_STICKERS = "NUMBER_OF_STICKERS";
 
@@ -63,6 +65,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
     private static String CLIENT_REGISTRATION_TOKEN;
 
     //private static final String SERVER_KEY = "key=AAAA5-WnK0Y:APA91bGSNkJBv6lna--2EgJvdjxNtxt1eUc8yTKroB8nKJ3Tq_VSrWjSDFJ4ydON6OxM5sRr8QRNcnnZAXiTTzTL6dib9_XJIJEGe75h0oHKjrbvJMENomYQuZZUq0OiDrksuKPffK74";
+    private static final String SERVER_KEY = "key=AAAA5-WnK0Y:APA91bGSNkJBv6lna--2EgJvdjxNtxt1eUc8yTKroB8nKJ3Tq_VSrWjSDFJ4ydON6OxM5sRr8QRNcnnZAXiTTzTL6dib9_XJIJEGe75h0oHKjrbvJMENomYQuZZUq0OiDrksuKPffK74";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +78,6 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
             startActivity(intent);
         }
         createNotificationChannel();
-        SERVER_KEY = "key=" + Utils.getProperties(getApplicationContext()).getProperty("SERVER_KEY");
         setContentView(R.layout.activity_received_history);
         init(savedInstanceState);
         sendStickerButton = findViewById(R.id.sendStickerButton);
@@ -176,7 +178,9 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
             sendDialog.dismiss();
             // add to database as well here
             // TODO
-            sendNotification(other_username);
+            // sendNotification(other_username);
+            String sticker = "coffee"; // test case for now
+            sendSticker(other_username, sticker);
             View parentLayout = findViewById(android.R.id.content);
             Snackbar.make(parentLayout, R.string.send_sticker_confirm, Snackbar.LENGTH_SHORT)
                     .setAction("Action", null).show();
@@ -339,35 +343,68 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
     }
 
 
+    public void sendSticker(String other_username, String sticker) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference myUserRef = database.getReference("Users/"+other_username);
+                // Prepare intent which is triggered if the
+                // notification is selected
+                Intent intent = new Intent(ReceivedActivity.this, ReceiveNotificationActivity.class);
+                PendingIntent pIntent = PendingIntent.getActivity(ReceivedActivity.this, (int) System.currentTimeMillis(), intent, 0);
+                //PendingIntent callIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(),
+                //       new Intent(this, FakeCallActivity.class), 0);
 
-    public void sendNotification(String other_username) {
-        // Prepare intent which is triggered if the
-        // notification is selected
-        Intent intent = new Intent(this, ReceiveNotificationActivity.class);
-        PendingIntent pIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, 0);
-        //PendingIntent callIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(),
-        //       new Intent(this, FakeCallActivity.class), 0);
-
-
-        // Build notification
-        // Need to define a channel ID after Android Oreo
-        String channelId = other_username;
-        NotificationCompat.Builder notifyBuild = new NotificationCompat.Builder(this, channelId)
-                //"Notification icons must be entirely white."
-                .setSmallIcon(R.drawable.coffee)
-                .setContentTitle("New mail from " + "test@test.com")
-                .setContentText("Subject")
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                // hide the notification after its selected
-                .setAutoCancel(true)
-                //.addAction(R.drawable.coffee, "Call", callIntent)
-                .setContentIntent(pIntent);
-
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-        // // notificationId is a unique int for each notification that you must define
-        notificationManager.notify(0, notifyBuild.build());
+                // Build notification
+                // Need to define a channel ID after Android Oreo
+                String channelId = other_username;
+                NotificationCompat.Builder notifyBuild = new NotificationCompat.Builder(ReceivedActivity.this, channelId)
+                        //"Notification icons must be entirely white."
+                        .setSmallIcon(R.drawable.coffee) // get resources sticker
+                        .setContentTitle("New Sticker From " + my_username)
+                        .setContentText("Subject")
+                        .setPriority(NotificationCompat.PRIORITY_HIGH)
+                        // hide the notification after its selected
+                        .setAutoCancel(true)
+                        //.addAction(R.drawable.coffee, "Call", callIntent)
+                        .setContentIntent(pIntent);
+                NotificationManagerCompat notificationManager = NotificationManagerCompat.from(ReceivedActivity.this);
+                // // notificationId is a unique int for each notification that you must define
+                notificationManager.notify(0, notifyBuild.build());
+            }
+        }).start();
     }
+/*
+    public void sendStickerToken(String targetToken, String sticker) {
+        JSONObject jPayload = new JSONObject();
+        JSONObject jNotification = new JSONObject();
+        JSONObject jdata = new JSONObject();
+        try {
+            jNotification.put("title", "New message from "+my_username);
+            jNotification.put("body", my_username +" sent you a "+sticker );
+            jNotification.put("sound", "default");
+            jNotification.put("badge", "1"); // sticker? convert to image
+            *//*
+            // We can add more details into the notification if we want.
+            // We happen to be ignoring them for this demo.
+            jNotification.put("click_action", "OPEN_ACTIVITY_1");
+            *//*
+            jdata.put("title", "data title from 'sendStickerToken'");
+            jdata.put("content", "data content from 'sendStickerToken'");
+            jPayload.put("to", targetToken);
+            jPayload.put("priority", "high");
+            jPayload.put("notification", jNotification);
+            jPayload.put("data", jdata);
 
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        final String resp = Utils.stickerHttpConnection(SERVER_KEY, jPayload);
+        handler.post(() -> {Toast.makeText(ReceivedActivity.this, "Status from Server: " + resp, Toast.LENGTH_SHORT).show();});
+    }
+        */
 }
 
 
