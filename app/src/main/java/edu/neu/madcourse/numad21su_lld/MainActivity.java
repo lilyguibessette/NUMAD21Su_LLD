@@ -66,9 +66,15 @@ public class MainActivity extends AppCompatActivity {
 
 
         login_button.setOnClickListener(new View.OnClickListener() {
+        } else {
+            setContentView(R.layout.activity_login);
+            login_button = findViewById(R.id.login_button);
+            login_button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     my_username = ((EditText) findViewById(R.id.enter_username)).getText().toString();
+
+                    // TODO store this username and get this instanceID and send to database
                     Intent intent = new Intent(MainActivity.this, ReceivedActivity.class);
                     // Write a message to the database
                     FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -111,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(intent);
                 }
             });
+        }
         }
         // maybe make this a login screen and if logged in before then go to received activity
         // here need to send token and username to database
