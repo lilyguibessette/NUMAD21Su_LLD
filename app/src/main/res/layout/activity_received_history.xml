@@ -35,4 +35,16 @@
         app:srcCompat="@android:drawable/ic_menu_send"
         android:tooltipText="Send a Sticker" />
 
+    <Button
+        android:id="@+id/account_info_button"
+        android:layout_width="379dp"
+        android:layout_height="52dp"
+        android:text="@string/account_info_button"
+        app:layout_constraintBottom_toBottomOf="@+id/recycler_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.483"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/recycler_view"
+        app:layout_constraintVertical_bias="0.977" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

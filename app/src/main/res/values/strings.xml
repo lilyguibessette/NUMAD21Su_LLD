@@ -9,14 +9,18 @@
     <string name="welcome">Welcome! Enter your username.</string>
     <string name="enter_username">Enter your username</string>
     <string name="login_button">LOGIN</string>
+    <string name="account_info_button">Account Information</string>
+    <string name="back">Back</string>
+    <string name="token">Client Token</string>
+    <string name="number_sent">Number Stickers Sent</string>
 
     <string-array name="sticker_array">
         <item>coffee</item>
         <item>donut</item>
         <item>egg</item>
-        <item>french fries</item>
+        <item>french_fries</item>
         <item>hamburger</item>
-        <item>ice cream</item>
+        <item>ice_cream</item>
         <item>milk</item>
         <item>toast</item>
         <item>watermelon</item>

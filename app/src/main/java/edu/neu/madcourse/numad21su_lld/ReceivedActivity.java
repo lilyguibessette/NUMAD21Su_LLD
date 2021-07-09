@@ -1,11 +1,14 @@
 package edu.neu.madcourse.numad21su_lld;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -15,8 +18,12 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
@@ -26,7 +33,10 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
     private RecyclerView stickerRecyclerView;
     private ReceivedStickerAdapter receivedStickerAdapter;
     private RecyclerView.LayoutManager receivedStickerLayoutManager;
-    private FloatingActionButton sendStickerButton; //TODO
+    private FloatingActionButton sendStickerButton;
+    private Button accountInfoButton;
+    private String my_username;
+    private String my_token;
 
     private static final String KEY_OF_STICKER = "KEY_OF_STICKER";
     private static final String NUMBER_OF_STICKERS = "NUMBER_OF_STICKERS";
@@ -40,11 +50,17 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_received_history);
         init(savedInstanceState);
-
-
-        //TODO Add in layout button
+/*         SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE);
+       my_username = sharedPreferences.getString("userName", "Not found");
+        my_token = sharedPreferences.getString("CLIENT_REGISTRATION_TOKEN", "Not found");
+        if(my_username == "Not found" || my_token == "Not found"){
+            Intent intent = new Intent(ReceivedActivity.this, MainActivity.class);
+            startActivity(intent);
+        }*/
+//        createNotificationChannel();
+ //       SERVER_KEY = "key=" + Utils.getProperties(getApplicationContext()).getProperty("SERVER_KEY");
+        setContentView(R.layout.activity_received_history);
         sendStickerButton = findViewById(R.id.sendStickerButton);
         sendStickerButton.setTooltipText("Send a Sticker");
         sendStickerButton.setOnClickListener(new View.OnClickListener() {
@@ -52,6 +68,16 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
             public void onClick(View v) {
                 // use dialog for sending link
                 startSendDialog();
+            }
+        });
+
+        accountInfoButton = findViewById(R.id.account_info_button);
+        accountInfoButton.setTooltipText("View Account Information");
+        accountInfoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // use dialog for sending link
+                viewAccountInformation(v);
             }
         });
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
@@ -72,7 +98,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
 
         itemTouchHelper.attachToRecyclerView(stickerRecyclerView);
 
-//        SERVER_KEY = "key=" + Utils.getProperties(getApplicationContext()).getProperty("SERVER_KEY");
+    //    SERVER_KEY = "key=" + Utils.getProperties(getApplicationContext()).getProperty("SERVER_KEY");
 
 
         // TODO Configure receiving from database the list of stickers
@@ -91,10 +117,10 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
 
     public void onDialogPositiveClick(DialogFragment sendDialog) {
         Dialog addSendDialog = sendDialog.getDialog();
-
         String username = ((EditText) addSendDialog.findViewById(R.id.username)).getText().toString();
         // Need to figure out how to select icons and associate them with a string/enum
         // TODO currently just have stickers as text/string but need to change to icon
+        // https://stackoverflow.com/questions/3609231/how-is-it-possible-to-create-a-spinner-with-images-instead-of-text
         // https://stackoverflow.com/questions/13151847/how-to-add-image-to-spinner-in-android
         Spinner sticker_spinner = addSendDialog.findViewById(R.id.sticker_spinner);
         sticker_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -102,6 +128,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String[] sticker_choices = getResources().getStringArray(R.array.sticker_array);
                 String sticker = sticker_choices[position];
+
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
@@ -118,6 +145,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
             // add to database as well here
             // TODO
 
+
             View parentLayout = findViewById(android.R.id.content);
             Snackbar.make(parentLayout, R.string.send_sticker_confirm, Snackbar.LENGTH_SHORT)
                     .setAction("Action", null).show();
@@ -132,6 +160,9 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
     // currently fake method to be changed to connection to database
     private boolean isValidUsername(String username) {
         // do in another thread ?
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myUserRef = database.getReference("Users/"+username);
+        Task<DataSnapshot> snapshot = myUserRef.get();
         if (username == "blah"){
             return true;
         }
@@ -168,7 +199,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                 for (int i = 0; i < size; i++) {
                     String username = savedInstanceState.getString(KEY_OF_STICKER + i + "0");
                     String sticker = savedInstanceState.getString(KEY_OF_STICKER + i + "1");
-                    StickerCard StickerCard = new StickerCard(username, Sticker.valueOf(sticker));
+                    StickerCard StickerCard = new StickerCard(username, sticker);
                     stickerHistory.add(StickerCard);
                 }
             }
@@ -184,5 +215,61 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         stickerRecyclerView.setLayoutManager(receivedStickerLayoutManager);
     }
 
+
+    public void viewAccountInformation(View view) {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        final View account_info_view = getLayoutInflater().inflate(R.layout.account_info, null);
+        Button back_button = (Button) account_info_view.findViewById(R.id.back_button);
+        TextView tv_username = account_info_view.findViewById(R.id.my_username);
+        TextView tv_number_sent = account_info_view.findViewById(R.id.my_number_sent);
+        TextView tv_token = account_info_view.findViewById(R.id.my_token);
+        tv_username.setText(my_username);
+        tv_token.setText(my_token);
+//        tv_number_sent.setText(my_number_sent);
+        dialogBuilder.setView(account_info_view);
+        AlertDialog dialog = dialogBuilder.create();
+        dialog.show();
+
+        back_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+    }
+    /*
+    public void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = my_username;
+            String description = "Notifications for "+ my_username;
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(my_username, name, importance);
+            channel.setDescription(description);
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+            subscribeToMyMessages();
+        }
+    }
+
+    public void subscribeToMyMessages() {
+        FirebaseMessaging.getInstance().subscribeToTopic(my_username)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        String msg = "Subscribed to "+my_username;
+                        if (!task.isSuccessful()) {
+                            msg = "Failed to subscribe to "+my_username;
+                            Toast.makeText(ReceivedActivity.this, "Something is wrong!", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(ReceivedActivity.this, msg, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+    }*/
+
+
 }
+
+
 
