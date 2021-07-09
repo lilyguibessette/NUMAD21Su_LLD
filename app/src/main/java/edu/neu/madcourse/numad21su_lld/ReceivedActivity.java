@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -28,11 +29,16 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class ReceivedActivity extends AppCompatActivity implements SendStickerDialogFragment.SendStickerDialogListener {
@@ -44,6 +50,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
     private Button accountInfoButton;
     private String my_username;
     private String my_token;
+    private HashMap<String, Boolean> validatedUsers = new HashMap<>();
 
     private static final String KEY_OF_STICKER = "KEY_OF_STICKER";
     private static final String NUMBER_OF_STICKERS = "NUMBER_OF_STICKERS";
@@ -164,17 +171,35 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
     }
 
     // TODO validate username
-    // currently fake method to be changed to connection to database
-    private boolean isValidUsername(String username) {
+    private boolean isValidUsername(String other_username) {
         // do in another thread ?
+        if (validatedUsers.containsKey(other_username) && validatedUsers.get(other_username)){
+            Log.d(TAG, "Already Validated: " + other_username);
+            return true;
+        }
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myUserRef = database.getReference("Users/"+username);
-        Task<DataSnapshot> snapshot = myUserRef.get();
-        if (username == "blah"){
+        DatabaseReference myUserRef = database.getReference("Users/"+other_username);
+        myUserRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()){
+                    validatedUsers.put(other_username, true);
+                    Toast.makeText(ReceivedActivity.this, "Validated: " + other_username, Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "Validated: " + other_username);
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull @NotNull DatabaseError error) {
+                Toast.makeText(ReceivedActivity.this, "Fail to get data.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        if (validatedUsers.containsKey(other_username) && validatedUsers.get(other_username)){
             return true;
         }
         return false;
     }
+
 
     @Override
     public void onDialogNegativeClick(DialogFragment sendDialog) {
@@ -230,9 +255,27 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         TextView tv_username = account_info_view.findViewById(R.id.my_username);
         TextView tv_number_sent = account_info_view.findViewById(R.id.my_number_sent);
         TextView tv_token = account_info_view.findViewById(R.id.my_token);
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myUserRef = database.getReference("Users/"+my_username);
+        myUserRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                User user = snapshot.getValue(User.class);
+                Log.d(TAG, "Found: " + my_username);
+                int my_number_sent = user.stickers_sent;
+                tv_number_sent.setText(String.valueOf(my_number_sent));
+                Log.d(TAG, "Number Sent: " + my_username);
+                }
+
+            @Override
+            public void onCancelled(@NonNull @NotNull DatabaseError error) {
+                Toast.makeText(ReceivedActivity.this, "Fail to get data.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         tv_username.setText(my_username);
         tv_token.setText(my_token);
-//        tv_number_sent.setText(my_number_sent);
         dialogBuilder.setView(account_info_view);
         AlertDialog dialog = dialogBuilder.create();
         dialog.show();
