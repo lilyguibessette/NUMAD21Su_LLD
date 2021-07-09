@@ -16,6 +16,8 @@ public class User {
         this.username = username;
         this.token = token;
         this.stickers_sent = 0;
+        this.received_history = new ArrayList<StickerMessage>();
+        this.received_history.add(new StickerMessage("WELCOME", "WELCOME"));
     }
 
     public User(String username, String token, int stickers_sent, ArrayList<StickerMessage> received_history){
@@ -33,7 +35,7 @@ public class User {
         return this.token;
     }
 
-    public ArrayList<StickerMessage> getReceivedHistory(){
+    public ArrayList<StickerMessage> getReceived_history(){
         return this.received_history;
     }
 

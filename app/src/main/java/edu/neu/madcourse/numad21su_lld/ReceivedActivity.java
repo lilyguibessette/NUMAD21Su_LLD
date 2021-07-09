@@ -29,6 +29,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -61,7 +63,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
     private static final String NUMBER_OF_STICKERS = "NUMBER_OF_STICKERS";
 
     private static final String TAG = ReceivedActivity.class.getSimpleName();
-    private static String SERVER_KEY;
+    //private static String SERVER_KEY;
     private static String CLIENT_REGISTRATION_TOKEN;
 
     //private static final String SERVER_KEY = "key=AAAA5-WnK0Y:APA91bGSNkJBv6lna--2EgJvdjxNtxt1eUc8yTKroB8nKJ3Tq_VSrWjSDFJ4ydON6OxM5sRr8QRNcnnZAXiTTzTL6dib9_XJIJEGe75h0oHKjrbvJMENomYQuZZUq0OiDrksuKPffK74";
@@ -136,7 +138,6 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
 
     public void onDialogPositiveClick(DialogFragment sendDialog) {
         Dialog addSendDialog = sendDialog.getDialog();
-        String username = ((EditText) addSendDialog.findViewById(R.id.username)).getText().toString();
         String other_username = ((EditText) addSendDialog.findViewById(R.id.username)).getText().toString();
 
         // Need to figure out how to select icons and associate them with a string/enum
@@ -144,6 +145,11 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         // https://stackoverflow.com/questions/3609231/how-is-it-possible-to-create-a-spinner-with-images-instead-of-text
         // https://stackoverflow.com/questions/13151847/how-to-add-image-to-spinner-in-android
         Spinner sticker_spinner = addSendDialog.findViewById(R.id.sticker_spinner);
+
+        // TODO maybe this is a solution
+        // https://www.it1228.com/658881.html
+        // SpinnerAdapter adapter = new SpinnerAdapter(this, R.layout.spinner_value_layout, textArray, imageArray);
+        // spinner.setAdapter(adapter);
 
         ImageArrayAdapter adapter = new ImageArrayAdapter(this, new Integer[] {
                         R.drawable.coffee,
@@ -157,12 +163,10 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                         R.drawable.watermelon});
         sticker_spinner.setAdapter(adapter);
         sticker_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String[] sticker_choices = getResources().getStringArray(R.array.sticker_array);
                 String sticker = sticker_choices[position];
-
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
@@ -181,6 +185,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
             // sendNotification(other_username);
             String sticker = "coffee"; // test case for now
             sendSticker(other_username, sticker);
+            sendStickerMessageToDB(other_username, sticker);
             View parentLayout = findViewById(android.R.id.content);
             Snackbar.make(parentLayout, R.string.send_sticker_confirm, Snackbar.LENGTH_SHORT)
                     .setAction("Action", null).show();
@@ -191,6 +196,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         }
         // --------------
     }
+
 
     // TODO validate username
     private boolean isValidUsername(String other_username) {
@@ -363,7 +369,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                         //"Notification icons must be entirely white."
                         .setSmallIcon(R.drawable.coffee) // get resources sticker
                         .setContentTitle("New Sticker From " + my_username)
-                        .setContentText("Subject")
+                        .setContentText("Subject: " + sticker)
                         .setPriority(NotificationCompat.PRIORITY_HIGH)
                         // hide the notification after its selected
                         .setAutoCancel(true)
@@ -375,6 +381,74 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
             }
         }).start();
     }
+
+
+    private void sendStickerMessageToDB(String other_username, String sticker) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference otherUserRef = database.getReference("Users/"+other_username);
+                // TODO How to update data in the database
+                otherUserRef.addValueEventListener(new ValueEventListener() {
+                    public User other_user;
+                    public Boolean first_history_data_change = true;
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        other_user = dataSnapshot.getValue(User.class);
+                        if (other_user != null && first_history_data_change){
+                            other_user.addMessage(new StickerMessage(my_username, sticker));
+                            otherUserRef.setValue(other_user).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Log.w(TAG, "Update received history: " + other_user.toString());
+                                }
+                            })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.w(TAG, "FAILED to update received history: " + other_user.toString());
+                                        }
+                                    });
+                            }
+                        first_history_data_change = false;
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        // Getting Post failed, log a message
+                        Log.w(TAG, "other_user sendStickerMessageToDB onCancelled", databaseError.toException());
+                    }
+
+                });
+
+                // This is working
+                DatabaseReference myUserRef = database.getReference("Users/"+my_username);
+                myUserRef.addValueEventListener(new ValueEventListener() {
+                    public User my_user;
+                    public Boolean first_sticker_data_change = true;
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        my_user = dataSnapshot.getValue(User.class);
+                        if (first_sticker_data_change) {
+                            my_user.stickers_sent += 1;
+                            Log.w(TAG, "Update sitckers sent: " + my_user.toString());
+                            myUserRef.setValue(my_user);
+                        }
+                        first_sticker_data_change = false;
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        // Getting Post failed, log a message
+                        Log.w(TAG, "my_user sendStickerMessageToDB onCancelled", databaseError.toException());
+                    }
+                });
+
+            }
+        }).start();
+    }
+
 /*
     public void sendStickerToken(String targetToken, String sticker) {
         JSONObject jPayload = new JSONObject();
