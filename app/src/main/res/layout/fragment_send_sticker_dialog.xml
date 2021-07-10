@@ -1,5 +1,5 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
@@ -16,7 +16,7 @@
         android:hint="@string/username"
         android:inputType="text" />
 
-    <Spinner
+    <!--<Spinner
         android:id="@+id/sticker_spinner"
         android:layout_width="396dp"
         android:layout_height="63dp"
@@ -26,6 +26,15 @@
         android:layout_marginBottom="16dp"
         android:entries="@array/sticker_array"
         android:fadeScrollbars="false"
-        android:spinnerMode="dropdown" />
+        android:spinnerMode="dropdown"
+        tools:listitem="@layout/spinner_items"/>-->
+
+    <GridView
+        android:id="@+id/sticker_grid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:numColumns="3"
+        android:horizontalSpacing="10dp"
+        android:verticalSpacing="10dp"/>
 
 </LinearLayout>

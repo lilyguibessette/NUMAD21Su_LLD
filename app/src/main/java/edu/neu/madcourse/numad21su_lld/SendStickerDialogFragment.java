@@ -6,12 +6,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.widget.GridView;
 
 import androidx.fragment.app.DialogFragment;
 
 
 public class SendStickerDialogFragment extends DialogFragment {
-    
+
     public interface SendStickerDialogListener {
         void onDialogPositiveClick(DialogFragment sendDialog);
         void onDialogNegativeClick(DialogFragment sendDialog);

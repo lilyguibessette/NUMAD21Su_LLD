@@ -16,7 +16,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,6 +61,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
     private String my_token;
     private String sticker_to_send;
     int received_history_size;
+    GridView sticker_grid;
     DatabaseReference myUserHistoryRef;
     private HashMap<String, Boolean> validatedUsers = new HashMap<>();
     private final Handler handler = new Handler();
@@ -134,7 +137,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         Dialog addSendDialog = sendDialog.getDialog();
         String other_username = ((EditText) addSendDialog.findViewById(R.id.username)).getText().toString();
 
-        // Need to figure out how to select icons and associate them with a string/enum
+        /*// Need to figure out how to select icons and associate them with a string/enum
         // TODO currently just have stickers as text/string but need to change to icon
         // https://stackoverflow.com/questions/3609231/how-is-it-possible-to-create-a-spinner-with-images-instead-of-text
         // https://stackoverflow.com/questions/13151847/how-to-add-image-to-spinner-in-android
@@ -142,22 +145,36 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
 
         // TODO maybe this is a solution
         // https://www.it1228.com/658881.html
-        // SpinnerAdapter adapter = new SpinnerAdapter(this, R.layout.spinner_value_layout, textArray, imageArray);
-        // spinner.setAdapter(adapter);
+        SpinnerAdapter adapter = new ImageArrayAdapter(this, new Integer[] {
+                R.drawable.coffee,
+                R.drawable.donut,
+                R.drawable.egg,
+                R.drawable.french_fries,
+                R.drawable.hamburger,
+                R.drawable.ice_cream,
+                R.drawable.milk,
+                R.drawable.toast,
+                R.drawable.watermelon});
+        sticker_spinner.setAdapter(adapter);
+        */
 
-        ImageArrayAdapter adapter = new ImageArrayAdapter(this, new Integer[] {
-                        R.drawable.coffee,
-                        R.drawable.donut,
-                        R.drawable.egg,
-                        R.drawable.french_fries,
-                        R.drawable.hamburger,
-                        R.drawable.ice_cream,
-                        R.drawable.milk,
-                        R.drawable.toast,
-                        R.drawable.watermelon});
+        // TODO: not sure if this is where it belongs... might want to move to a SendActivity
+        sticker_grid = findViewById(R.id.sticker_grid);
+        ArrayList<Sticker> stickerArrayList = new ArrayList<Sticker>();
+        stickerArrayList.add(new Sticker("Coffee", R.drawable.coffee));
+        stickerArrayList.add(new Sticker("Donut", R.drawable.donut));
+        stickerArrayList.add(new Sticker("Egg", R.drawable.egg));
+        stickerArrayList.add(new Sticker("French Fries", R.drawable.french_fries));
+        stickerArrayList.add(new Sticker("Hamburger", R.drawable.hamburger));
+        stickerArrayList.add(new Sticker("Ice Cream", R.drawable.ice_cream));
+        stickerArrayList.add(new Sticker("Milk", R.drawable.milk));
+        stickerArrayList.add(new Sticker("Toast", R.drawable.toast));
+        stickerArrayList.add(new Sticker("Watermwlon", R.drawable.watermelon));
 
-      //  sticker_spinner.setAdapter(adapter);
-        sticker_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        StickerGridAdapter adapter = new StickerGridAdapter(this, stickerArrayList);
+        sticker_grid.setAdapter(adapter);
+
+        sticker_grid.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String[] sticker_choices = getResources().getStringArray(R.array.sticker_array);
