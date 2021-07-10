@@ -79,14 +79,13 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         }
         createNotificationChannel();
         setContentView(R.layout.activity_received_history);
-        received_history_size = 0;
+        received_history_size = 1;
         init(savedInstanceState);
         sendStickerButton = findViewById(R.id.sendStickerButton);
         sendStickerButton.setTooltipText("Send a Sticker");
         sendStickerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // use dialog for sending link
                 startSendDialog();
             }
         });
@@ -96,7 +95,6 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         accountInfoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // use dialog for sending link
                 viewAccountInformation(v);
             }
         });
@@ -115,20 +113,17 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                 //stickerHistory.remove(position);
             }
         });
-
         itemTouchHelper.attachToRecyclerView(stickerRecyclerView);
 
-    //    SERVER_KEY = "key=" + Utils.getProperties(getApplicationContext()).getProperty("SERVER_KEY");
-
-
         // TODO Configure receiving from database the list of stickers
+        // updateHistory();
+        //TODO this needs to be fixed because i broke our app
+
         // Need to add these to when receiving from database
         // --- stickerHistory.add(0, new StickerCard(username, sticker));
         // --- receivedStickerAdapter.notifyItemInserted(0);
         // Also need to keep track of number received and sent
     }
-
-
 
     public void startSendDialog() {
         DialogFragment sendDialog = new SendStickerDialogFragment();
@@ -161,7 +156,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                         R.drawable.toast,
                         R.drawable.watermelon});
 
-        sticker_spinner.setAdapter(adapter);
+      //  sticker_spinner.setAdapter(adapter);
         sticker_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -171,10 +166,10 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
+                sticker_to_send = "coffee"; //TODO remove this test
             }
         });
 
-        // TODO put this in thread
         if (isValidUsername(other_username)) {
             sendDialog.dismiss();
             // TODO transform this to the real sticker IMAGE chosen
@@ -188,11 +183,10 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
             Toast.makeText(ReceivedActivity.this, R.string.send_sticker_error,
                     Toast.LENGTH_SHORT).show();
         }
-        // --------------
     }
 
 
-    // TODO validate username
+    // TODO validate username - this seems to be a little wonky on the first validation - after the second time it is able to send a notif
     private boolean isValidUsername(String other_username) {
         // do in another thread ?
         if (validatedUsers.containsKey(other_username) && validatedUsers.get(other_username)){
@@ -287,12 +281,14 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         myUserRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                User user = snapshot.getValue(User.class);
-                Log.d(TAG, "Found: " + my_username);
-                int my_number_sent = user.stickers_sent;
-                tv_number_sent.setText(String.valueOf(my_number_sent));
-                Log.d(TAG, "Number Sent: " + my_username);
+                if (snapshot.exists() && my_username != null) {
+                    User user = snapshot.getValue(User.class);
+                    Log.d(TAG, "Found: " + my_username);
+                    int my_number_sent = user.stickers_sent;
+                    tv_number_sent.setText(String.valueOf(my_number_sent));
+                    Log.d(TAG, "Number Sent: " + my_username);
                 }
+            }
 
             @Override
             public void onCancelled(@NonNull @NotNull DatabaseError error) {
@@ -357,19 +353,20 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                 PendingIntent pIntent = PendingIntent.getActivity(ReceivedActivity.this, (int) System.currentTimeMillis(), intent, 0);
                 PendingIntent callIntent = PendingIntent.getActivity(ReceivedActivity.this, (int) System.currentTimeMillis(),
                        new Intent(ReceivedActivity.this, ReceiveNotificationActivity.class), 0);
-
                 // Build notification
                 // Need to define a channel ID after Android Oreo
                 String channelId = other_username;
+                // TODO make this not just coffee
+                int pngID = getStickerResourceID(sticker);
                 NotificationCompat.Builder notifyBuild = new NotificationCompat.Builder(ReceivedActivity.this, channelId)
                         //"Notification icons must be entirely white."
-                        .setSmallIcon(R.drawable.coffee) // get resources sticker
+                        .setSmallIcon(pngID) // get resources sticker
                         .setContentTitle("New Sticker From " + my_username)
                         .setContentText("Subject: " + sticker)
                         .setPriority(NotificationCompat.PRIORITY_HIGH)
                         // hide the notification after its selected
                         .setAutoCancel(true)
-                        .addAction(R.drawable.coffee, "Call", callIntent)
+                        .addAction(pngID, "Call", callIntent)
                         .setContentIntent(pIntent);
                 NotificationManagerCompat notificationManager = NotificationManagerCompat.from(ReceivedActivity.this);
                 // // notificationId is a unique int for each notification that you must define
@@ -486,19 +483,22 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                     public User my_user;
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        my_user = dataSnapshot.getValue(User.class);
-                        // Check size of received history
-                        ArrayList<StickerMessage> received_history = my_user.getReceived_history();
-                        int new_received_history_size = received_history.size();
-                        if (new_received_history_size > received_history_size){
-                            Resources res = getResources();
-                            for (int i = 0; i < new_received_history_size; i++) {
-                                StickerMessage stickerMessage = received_history.get(i);
-                                String username = stickerMessage.getUsername();
-                                String sticker = stickerMessage.getSticker_id();
-                                int pngID = res.getIdentifier(sticker , "drawable", getPackageName());
-                                stickerHistory.add(0, new StickerCard(username, sticker, pngID));
-                                receivedStickerAdapter.notifyItemInserted(0);
+                        if (dataSnapshot.exists() && my_username != null) {
+                            my_user = dataSnapshot.getValue(User.class);
+                            // Check size of received history
+                            ArrayList<StickerMessage> received_history = my_user.getReceived_history();
+                            int new_received_history_size = received_history.size();
+                            if (new_received_history_size > received_history_size) {
+                                Log.e(TAG,String.valueOf(new_received_history_size));
+                                for (int i = 1; i < new_received_history_size; i++) {
+                                    StickerMessage stickerMessage = received_history.get(i);
+                                    Log.e(TAG,stickerMessage.toString());
+                                    String username = stickerMessage.getUsername();
+                                    String sticker = stickerMessage.getSticker_id();
+                                    int pngID = getStickerResourceID(sticker);
+                                    stickerHistory.add(0, new StickerCard(username, sticker, pngID));
+                                    receivedStickerAdapter.notifyItemInserted(0);
+                                }
                             }
                         }
                     }
@@ -515,6 +515,12 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
     }
 
 
+    public int getStickerResourceID(String sticker){
+        Resources res = getResources();
+        int pngID = res.getIdentifier(sticker+".png" , "drawable", getPackageName());
+        // for now return coffee need to fix ^
+        return R.drawable.coffee;
+    }
 
 }
 

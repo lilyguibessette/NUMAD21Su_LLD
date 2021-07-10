@@ -1,10 +1,13 @@
 package edu.neu.madcourse.numad21su_lld;
-    import android.view.LayoutInflater;
-    import android.view.View;
-    import android.view.ViewGroup;
-    import androidx.recyclerview.widget.RecyclerView;
-    
-    import java.util.ArrayList;
+
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
 
 public class ReceivedStickerAdapter extends RecyclerView.Adapter<ReceivedStickerHolder>{
     private final ArrayList<StickerCard> stickerHistory;
@@ -20,10 +23,13 @@ public class ReceivedStickerAdapter extends RecyclerView.Adapter<ReceivedSticker
     }
 
     @Override
-    public void onBindViewHolder(ReceivedStickerHolder holder, int position)  {
+    public void onBindViewHolder(ReceivedStickerHolder holder, int position) {
         StickerCard currentItem = stickerHistory.get(position);
-        holder.username.setText(currentItem.getUsername());
-        holder.sticker_png_id.setImageResource(currentItem.getPNGid());
+        if (currentItem != null) {
+            Log.e("onBindViewHolder",currentItem.toString());
+            holder.username.setText(currentItem.getUsername());
+            holder.sticker_png_id.setImageResource(currentItem.getPNGid());
+        }
     }
 
     @Override
