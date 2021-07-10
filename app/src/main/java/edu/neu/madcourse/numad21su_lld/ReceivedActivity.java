@@ -59,6 +59,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
     private String my_token;
     private Integer sticker_to_send;
     int received_history_size;
+    Spinner sticker_spinner;
     DatabaseReference myUserHistoryRef;
     private HashMap<String, Boolean> validatedUsers = new HashMap<>();
     private final Handler handler = new Handler();
@@ -155,7 +156,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         // TODO currently just have stickers as text/string but need to change to icon
         // https://stackoverflow.com/questions/3609231/how-is-it-possible-to-create-a-spinner-with-images-instead-of-text
         // https://stackoverflow.com/questions/13151847/how-to-add-image-to-spinner-in-android
-        Spinner sticker_spinner = addSendDialog.findViewById(R.id.sticker_spinner);
+        // Spinner sticker_spinner = addSendDialog.findViewById(R.id.sticker_spinner);
 
         // TODO maybe this is a solution
         // https://www.it1228.com/658881.html
