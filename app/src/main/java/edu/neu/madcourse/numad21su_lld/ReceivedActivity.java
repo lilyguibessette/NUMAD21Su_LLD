@@ -113,12 +113,10 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         }
         createDatabaseResources();
         createNotificationChannel();
-
-        stickerHistory.add(new StickerMessage("username test", R.drawable.muncha_crunch));
-
         setContentView(R.layout.activity_received_history);
-        received_history_size = 1;
+        received_history_size = 0;
         init(savedInstanceState);
+        updateHistory();
         sendStickerButton = findViewById(R.id.sendStickerButton);
         sendStickerButton.setTooltipText("Send a Sticker");
         sendStickerButton.setOnClickListener(new View.OnClickListener() {
@@ -294,7 +292,6 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         receivedStickerLayoutManager = new LinearLayoutManager(this);
         stickerRecyclerView = findViewById(R.id.recycler_view);
         stickerRecyclerView.setHasFixedSize(true);
-        updateHistory();
         receivedStickerAdapter = new ReceivedStickerAdapter(stickerHistory);
         stickerRecyclerView.setAdapter(receivedStickerAdapter);
         stickerRecyclerView.setLayoutManager(receivedStickerLayoutManager);
@@ -493,16 +490,17 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                 myUserHistoryRef = database.getReference("Users/"+my_username);
                 myUserHistoryRef.addValueEventListener(new ValueEventListener() {
                     public User my_user;
+                    public boolean init = true;
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists() && my_username != null) {
+                        if (dataSnapshot.exists() && my_username != null && init) {
                             my_user = dataSnapshot.getValue(User.class);
                             // Check size of received history
                             ArrayList<StickerMessage> received_history = my_user.getReceived_history();
                             int new_received_history_size = received_history.size();
                             if (new_received_history_size > received_history_size) {
                                 Log.e(TAG,String.valueOf(new_received_history_size));
-                                for (int i = 1; i < new_received_history_size; i++) {
+                                for (int i = 0; i < new_received_history_size; i++) {
                                     StickerMessage stickerMessage = received_history.get(i);
                                     Log.e(TAG,stickerMessage.toString());
                                     String username = stickerMessage.getUsername();
@@ -513,6 +511,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                                 }
                             }
                         }
+                        init = false;
                     }
 
                     @Override
@@ -578,20 +577,17 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                 // A new data item has been added, add it to the list
                 StickerMessage message = dataSnapshot.getValue(StickerMessage.class);
                 stickerHistory.add(message);
+                receivedStickerAdapter.notifyItemInserted(0);
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
                 Log.d(TAG, "onChildChanged:" + dataSnapshot.getKey());
-                StickerMessage message = dataSnapshot.getValue(StickerMessage.class);
-
             }
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
                 Log.d(TAG, "onChildRemoved:" + dataSnapshot.getKey());
-                // A data item has been removed
-                StickerMessage message = dataSnapshot.getValue(StickerMessage.class);
             }
 
             @Override
