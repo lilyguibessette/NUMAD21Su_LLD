@@ -17,8 +17,6 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
-import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -61,8 +59,8 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
     private String my_token;
     private String sticker_to_send;
     int received_history_size;
-    GridView sticker_grid;
-    DatabaseReference myUserHistoryRef;
+    private GridView sticker_grid;
+    private DatabaseReference myUserHistoryRef;
     private HashMap<String, Boolean> validatedUsers = new HashMap<>();
     private final Handler handler = new Handler();
     private static final String KEY_OF_STICKER = "KEY_OF_STICKER";
