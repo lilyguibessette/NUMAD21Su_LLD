@@ -2,14 +2,11 @@ package edu.neu.madcourse.numad21su_lld;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.GridView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -23,8 +20,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
-
-import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -76,7 +71,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick (View view){
                 my_username = ((EditText) findViewById(R.id.enter_username)).getText().toString();
-                userObject = new User(my_username,CLIENT_REGISTRATION_TOKEN);
                 Intent intent = new Intent(MainActivity.this, ReceivedActivity.class);
                 // Write a message to the database
                 // TODO fix because this overwrites all past history -- fixed i think
@@ -105,7 +99,8 @@ public class MainActivity extends AppCompatActivity {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         if (dataSnapshot.exists()) {
                             my_user = dataSnapshot.getValue(User.class);
-                        } else{
+                        } else {
+                            userObject = new User(my_username,CLIENT_REGISTRATION_TOKEN);
                             myUserRef.setValue(userObject);
                         }
                     }
