@@ -4,10 +4,8 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
@@ -23,8 +21,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -43,8 +39,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import edu.neu.madcourse.numad21su_lld.fcm_server.Utils;
 
 
 public class ReceivedActivity extends AppCompatActivity implements SendStickerDialogFragment.SendStickerDialogListener {
@@ -173,6 +174,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         sticker_to_send = imageArray[sticker_spinner.getSelectedItemPosition()];
         if (isValidUsername(other_username)) {
             sendDialog.dismiss();
+            sendStickertoUserTopic(other_username, sticker_to_send);
             sendSticker(other_username, sticker_to_send);
             sendStickerMessageToDB(other_username, sticker_to_send);
             View parentLayout = findViewById(android.R.id.content);
@@ -293,6 +295,38 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         }
     }
 
+
+    public void sendStickertoUserTopic(String other_user, int sticker_to_send) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                JSONObject jPayload = new JSONObject();
+                JSONObject jNotification = new JSONObject();
+                try {
+
+                    jNotification.put("title", "New Sticker from "+ my_username);
+                    jNotification.put("body", sticker_to_send);
+                    jNotification.put("sound", "default");
+                    jNotification.put("badge", "1");
+                    //TODO FIX THIS
+                    // jNotification.put("click_action", "OPEN_ACTIVITY_1");
+
+                    // Populate the Payload object.
+                    // Note that "to" is a topic, not a token representing an app instance
+                    jPayload.put("to", "/topics/"+other_user);
+                    jPayload.put("priority", "high");
+                    jPayload.put("notification", jNotification);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                final String resp = Utils.fcmHttpConnection(SERVER_KEY, jPayload);
+                Log.d(TAG, "STICKER SENT TO " + other_user);
+                Log.d(TAG, resp);
+                //Utils.postToastMessage("Status from Server: " + resp, getApplicationContext());
+            }
+        }).start();
+    }
 
     public void subscribeToMyMessages() {
         FirebaseMessaging.getInstance().subscribeToTopic(my_username)
@@ -487,10 +521,8 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                 Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
                 StickerMessage message = dataSnapshot.getValue(StickerMessage.class);
                 Log.d(TAG, "onChildAdded:" + message.username);
-                if (message.username == "WELCOME"){
-                    Log.e(TAG, "WELCOME MESSAGE onChildAdded");
-                }
-                if (message.username != "WELCOME") {
+
+                /*
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
@@ -519,10 +551,10 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                             notificationManager.notify(0, notifyBuild.build());
                         }
                     }).start();
-
+                    */
                     stickerHistory.add(0, message);
                     receivedStickerAdapter.notifyItemInserted(0);
-                }
+
             }
 
             @Override
