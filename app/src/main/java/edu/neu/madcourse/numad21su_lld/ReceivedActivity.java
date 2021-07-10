@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -111,6 +110,8 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         }
         createDatabaseResources();
         createNotificationChannel();
+
+        stickerHistory.add(new StickerMessage("username test", R.drawable.muncha_crunch));
 
         setContentView(R.layout.activity_received_history);
         received_history_size = 1;
@@ -285,7 +286,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         for (int i = 0; i < size; i++) {
             outState.putString(KEY_OF_STICKER + i + "0", stickerHistory.get(i).getUsername());
             //outState.putString(KEY_OF_STICKER + i + "1", stickerHistory.get(i).getSticker());
-            outState.putString(KEY_OF_STICKER + i + "1", stickerHistory.get(i).getStickerPNGID());
+            outState.putString(KEY_OF_STICKER + i + "1", String.valueOf(stickerHistory.get(i).getSticker_id()));
         }
         super.onSaveInstanceState(outState);
     }

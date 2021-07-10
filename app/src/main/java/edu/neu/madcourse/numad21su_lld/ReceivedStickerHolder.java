@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class ReceivedStickerHolder extends RecyclerView.ViewHolder {
     public TextView username;
-    //public TextView sticker;
     public ImageView sticker_png_id;
 
     public ReceivedStickerHolder(View stickerHistoryView) {
