@@ -5,13 +5,17 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.fragment.app.DialogFragment;
+
+import static android.content.ContentValues.TAG;
 
 
 public class SendStickerDialogFragment extends DialogFragment {
@@ -34,6 +38,7 @@ public class SendStickerDialogFragment extends DialogFragment {
             R.drawable.milk,
             R.drawable.toast,
             R.drawable.watermelon};
+    int valueToSend;
 
     public interface SendStickerDialogListener {
         void onDialogPositiveClick(DialogFragment sendDialog);
@@ -48,8 +53,6 @@ public class SendStickerDialogFragment extends DialogFragment {
         // Get the layout inflater
         View view = inflater.inflate(R.layout.fragment_send_sticker_dialog, null);
         sticker_spinner = (Spinner)view.findViewById(R.id.sticker_spinner);
-        TextView text = (TextView) view.findViewById(R.id.spinnerTextView);
-        ImageView imageView =(ImageView) view.findViewById(R.id.spinnerImages);
         Context context = getContext();
         SpinnerAdapter adapter = new SpinnerAdapter(context, R.layout.spinner_value_layout, textArray, imageArray);
         sticker_spinner.setAdapter(adapter);
@@ -80,5 +83,9 @@ public class SendStickerDialogFragment extends DialogFragment {
             // The activity doesn't implement the interface, throw exception
             throw new ClassCastException("Activity must implement SendStickerDialogListener");
         }
+    }
+
+    public int getValueToSend(){
+        return valueToSend;
     }
 }

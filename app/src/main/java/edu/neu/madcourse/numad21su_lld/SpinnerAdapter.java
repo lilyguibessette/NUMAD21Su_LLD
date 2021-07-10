@@ -42,7 +42,7 @@ public class SpinnerAdapter extends ArrayAdapter<String> {
         TextView textView = (TextView) row.findViewById(R.id.spinnerTextView);
         textView.setText(contentArray[position]);
 
-        ImageView imageView = (ImageView)row.findViewById(R.id.spinnerImages);
+        ImageView imageView = (ImageView) row.findViewById(R.id.spinnerImages);
         imageView.setImageResource(imageArray[position]);
         return row;
     }

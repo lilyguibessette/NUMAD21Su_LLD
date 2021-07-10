@@ -42,8 +42,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -151,12 +149,8 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
     public void onDialogPositiveClick(DialogFragment sendDialog) {
         Dialog addSendDialog = sendDialog.getDialog();
         String other_username = ((EditText) addSendDialog.findViewById(R.id.username)).getText().toString();
-
-        // Need to figure out how to select icons and associate them with a string/enum
-        // TODO currently just have stickers as text/string but need to change to icon
-        // https://stackoverflow.com/questions/3609231/how-is-it-possible-to-create-a-spinner-with-images-instead-of-text
-        // https://stackoverflow.com/questions/13151847/how-to-add-image-to-spinner-in-android
-        // Spinner sticker_spinner = addSendDialog.findViewById(R.id.sticker_spinner);
+        sticker_spinner = addSendDialog.findViewById(R.id.sticker_spinner);
+        sticker_to_send = imageArray[sticker_spinner.getSelectedItemPosition()];
 
         // TODO maybe this is a solution
         // https://www.it1228.com/658881.html
@@ -176,18 +170,6 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
 */
       //  sticker_spinner.setAdapter(adapter);
 
-        sticker_spinner = (Spinner) addSendDialog.findViewById(R.id.sticker_spinner);
-        sticker_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                sticker_to_send = imageArray[position];
-                Log.e(TAG, sticker_to_send + " CHOSEN STICKER");
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                sticker_to_send = R.drawable.coffee; //TODO remove this test
-            }
-        });
 
         if (isValidUsername(other_username)) {
             sendDialog.dismiss();
@@ -225,7 +207,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                 }
             }
             @Override
-            public void onCancelled(@NonNull @NotNull DatabaseError error) {
+            public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(ReceivedActivity.this, "Failed to get data.", Toast.LENGTH_SHORT).show();
                 Toast.makeText(ReceivedActivity.this, "Fail to get data.", Toast.LENGTH_SHORT).show();
                 Log.e(TAG, "Cancelled, failed to get: " + other_username);
@@ -312,7 +294,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
             }
 
             @Override
-            public void onCancelled(@NonNull @NotNull DatabaseError error) {
+            public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(ReceivedActivity.this, "Fail to get data.", Toast.LENGTH_SHORT).show();
             }
         });
