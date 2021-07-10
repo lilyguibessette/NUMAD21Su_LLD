@@ -36,10 +36,11 @@
 
     <Button
         android:id="@+id/account_info_button"
-        android:layout_width="379dp"
+        android:layout_width="wrap_content"
         android:layout_height="52dp"
         android:layout_marginBottom="10dp"
         android:text="@string/account_info_button"
+        android:backgroundTint="@color/blush"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

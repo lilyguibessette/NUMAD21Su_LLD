@@ -9,7 +9,7 @@
     <string name="welcome">Welcome! Enter your username.</string>
     <string name="enter_username">Enter your username</string>
     <string name="login_button">LOGIN</string>
-    <string name="account_info_button">Account Information</string>
+    <string name="account_info_button">User Stats</string>
     <string name="back">Back</string>
     <string name="token">Client Token</string>
     <string name="number_sent">Number Stickers Sent</string>
