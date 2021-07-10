@@ -71,6 +71,8 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
     private DatabaseReference myUserRef;
     private DatabaseReference myUserHistoryRef;
     private DatabaseReference allUsersRef;
+    private ChildEventListener validatedUsersListener;
+    private ChildEventListener myUserHistoryListener;
     private ChildEventListener myStickerNumberEventListener;
     private ChildEventListener userEventListener;
     //
@@ -95,6 +97,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
             R.drawable.milk,
             R.drawable.toast,
             R.drawable.watermelon};
+
 
 
     @Override
@@ -152,7 +155,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         itemTouchHelper.attachToRecyclerView(stickerRecyclerView);
 
         // TODO Configure receiving from database the list of stickers
-        // updateHistory();
+        //updateHistory();
         //TODO this needs to be fixed because i broke our app
 
         // Need to add these to when receiving from database
@@ -161,11 +164,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         // Also need to keep track of number received and sent
     }
 
-    private void createDatabaseResources() {
-        database = FirebaseDatabase.getInstance();
-        myUserRef = database.getReference("Users/"+my_username);
-        allUsersRef = database.getReference("Users");
-    }
+
 
     /**
      * DIALOG TO SEND STICKERS
@@ -180,29 +179,8 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         String other_username = ((EditText) addSendDialog.findViewById(R.id.username)).getText().toString();
         sticker_spinner = addSendDialog.findViewById(R.id.sticker_spinner);
         sticker_to_send = imageArray[sticker_spinner.getSelectedItemPosition()];
-
-        // TODO maybe this is a solution
-        // https://www.it1228.com/658881.html
-        // SpinnerAdapter adapter = new SpinnerAdapter(this, R.layout.spinner_value_layout, textArray, imageArray);
-        // spinner.setAdapter(adapter);
-/*
-        SpinnerAdapter adapter = new SpinnerAdapter(this, new Integer[] {
-                        R.drawable.coffee,
-                        R.drawable.donut,
-                        R.drawable.egg,
-                        R.drawable.french_fries,
-                        R.drawable.hamburger,
-                        R.drawable.ice_cream,
-                        R.drawable.milk,
-                        R.drawable.toast,
-                        R.drawable.watermelon});
-*/
-      //  sticker_spinner.setAdapter(adapter);
-
-
         if (isValidUsername(other_username)) {
             sendDialog.dismiss();
-            // TODO transform this to the real sticker IMAGE chosen
             sendSticker(other_username, sticker_to_send);
             sendStickerMessageToDB(other_username, sticker_to_send);
             View parentLayout = findViewById(android.R.id.content);
@@ -250,8 +228,8 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
             return true;
         }
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myUserRef = database.getReference("Users/" + other_username);
-        myUserRef.addValueEventListener(new ValueEventListener() {
+        DatabaseReference otherUserRef = database.getReference("Users/" + other_username);
+        otherUserRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.exists()){
@@ -562,6 +540,13 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
      * - Listen for change in all users to validate
      * - Listen for change in received history
      */
+    private void createDatabaseResources() {
+        database = FirebaseDatabase.getInstance();
+        myUserRef = database.getReference("Users/"+my_username);
+        myUserHistoryRef = database.getReference("Users/"+my_username+"/received_history");
+        allUsersRef = database.getReference("Users");
+        setValidatedUsersListener();
+    }
 
     public void setNumberOfStickersListener(){
         myUserRef = database.getReference("Users/"+my_username);
@@ -586,7 +571,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
     }
 
     public void setReceivedHistoryListener(){
-        ChildEventListener childEventListener = new ChildEventListener() {
+        myUserHistoryListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
                 // A new data item has been added, add it to the list
@@ -597,7 +582,6 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
                 Log.d(TAG, "onChildChanged:" + dataSnapshot.getKey());
-                // A data item has changed
                 StickerMessage message = dataSnapshot.getValue(StickerMessage.class);
 
             }
@@ -612,51 +596,42 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
             @Override
             public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {
                 Log.d(TAG, "onChildMoved:" + dataSnapshot.getKey());
-
-                // A data item has changed position
-                //Comment movedComment = dataSnapshot.getValue(Comment.class);
-                //Message message = dataSnapshot.getValue(Message.class);
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.w(TAG, "onCancelled", databaseError.toException());
-                //Toast.makeText(mContext, "Failed to load data.", Toast.LENGTH_SHORT).show();
             }
         };
-        myUserHistoryRef = database.getReference("Users/"+my_username+"/received_history");
-        myUserHistoryRef.addChildEventListener(childEventListener);
+        myUserHistoryRef.addChildEventListener(myUserHistoryListener);
     }
 
 
-    private void setUsersEventListener() {
-        ChildEventListener childEventListener = new ChildEventListener() {
+    private void setValidatedUsersListener() {
+        validatedUsersListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
                 // A new data item has been added, add it to the list
-                //Message message = dataSnapshot.getValue(Message.class);
-                //messageList.add(message);
+                User user = dataSnapshot.getValue(User.class);
+                validatedUsers.put(user.getUsername(), true);
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
                 Log.d(TAG, "onChildChanged:" + dataSnapshot.getKey());
-
-                // A data item has changed
-                //Message message = dataSnapshot.getValue(Message.class);
+                // Do nothing
             }
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
                 Log.d(TAG, "onChildRemoved:" + dataSnapshot.getKey());
-                // A data item has been removed
-
+                User user = dataSnapshot.getValue(User.class);
+                validatedUsers.put(user.getUsername(), false);
             }
 
             @Override
             public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {
                 Log.d(TAG, "onChildMoved:" + dataSnapshot.getKey());
-                // A data item has changed position
             }
 
             @Override
@@ -664,10 +639,8 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                 Log.w(TAG, "onCancelled", databaseError.toException());
             }
         };
-        allUsersRef.addChildEventListener(childEventListener);
+        allUsersRef.addChildEventListener(validatedUsersListener);
     }
-
-
 
 }
 
