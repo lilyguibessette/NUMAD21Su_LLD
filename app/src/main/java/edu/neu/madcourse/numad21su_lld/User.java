@@ -17,7 +17,7 @@ public class User {
         this.token = token;
         this.stickers_sent = 0;
         this.received_history = new ArrayList<StickerMessage>();
-        this.received_history.add(new StickerMessage("WELCOME", "WELCOME"));
+        this.received_history.add(new StickerMessage("WELCOME", R.drawable.muncha_crunch));
     }
 
     public User(String username, String token, int stickers_sent, ArrayList<StickerMessage> received_history){

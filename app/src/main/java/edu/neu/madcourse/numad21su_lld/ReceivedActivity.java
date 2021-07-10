@@ -57,7 +57,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
     private Button accountInfoButton;
     private String my_username;
     private String my_token;
-    private String sticker_to_send;
+    private Integer sticker_to_send;
     int received_history_size;
     DatabaseReference myUserHistoryRef;
     private HashMap<String, Boolean> validatedUsers = new HashMap<>();
@@ -66,7 +66,24 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
     private static final String NUMBER_OF_STICKERS = "NUMBER_OF_STICKERS";
     private static final String TAG = ReceivedActivity.class.getSimpleName();
     private static final String SERVER_KEY = "key=AAAA5-WnK0Y:APA91bGSNkJBv6lna--2EgJvdjxNtxt1eUc8yTKroB8nKJ3Tq_VSrWjSDFJ4ydON6OxM5sRr8QRNcnnZAXiTTzTL6dib9_XJIJEGe75h0oHKjrbvJMENomYQuZZUq0OiDrksuKPffK74";
-
+    String[] textArray = { "Coffee",
+            "Donut",
+            "Egg",
+            "French Fries",
+            "Hamburger",
+            "Ice Cream",
+            "Milk",
+            "Toast",
+            "Watermwlon"};
+    Integer[] imageArray = { R.drawable.coffee,
+            R.drawable.donut,
+            R.drawable.egg,
+            R.drawable.french_fries,
+            R.drawable.hamburger,
+            R.drawable.ice_cream,
+            R.drawable.milk,
+            R.drawable.toast,
+            R.drawable.watermelon};
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -144,8 +161,8 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         // https://www.it1228.com/658881.html
         // SpinnerAdapter adapter = new SpinnerAdapter(this, R.layout.spinner_value_layout, textArray, imageArray);
         // spinner.setAdapter(adapter);
-
-        ImageArrayAdapter adapter = new ImageArrayAdapter(this, new Integer[] {
+/*
+        SpinnerAdapter adapter = new SpinnerAdapter(this, new Integer[] {
                         R.drawable.coffee,
                         R.drawable.donut,
                         R.drawable.egg,
@@ -155,18 +172,19 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                         R.drawable.milk,
                         R.drawable.toast,
                         R.drawable.watermelon});
-
+*/
       //  sticker_spinner.setAdapter(adapter);
+
+        sticker_spinner = (Spinner) addSendDialog.findViewById(R.id.sticker_spinner);
         sticker_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String[] sticker_choices = getResources().getStringArray(R.array.sticker_array);
-                sticker_to_send = sticker_choices[position];
+                sticker_to_send = imageArray[position];
                 Log.e(TAG, sticker_to_send + " CHOSEN STICKER");
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                sticker_to_send = "coffee"; //TODO remove this test
+                sticker_to_send = R.drawable.coffee; //TODO remove this test
             }
         });
 
@@ -231,7 +249,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         outState.putInt(NUMBER_OF_STICKERS, size);
         for (int i = 0; i < size; i++) {
             outState.putString(KEY_OF_STICKER + i + "0", stickerHistory.get(i).getUsername());
-            outState.putString(KEY_OF_STICKER + i + "1", stickerHistory.get(i).getSticker());
+            //outState.putString(KEY_OF_STICKER + i + "1", stickerHistory.get(i).getSticker());
             outState.putString(KEY_OF_STICKER + i + "1", stickerHistory.get(i).getStickerPNGID());
         }
         super.onSaveInstanceState(outState);
@@ -250,8 +268,8 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                 for (int i = 0; i < size; i++) {
                     String username = savedInstanceState.getString(KEY_OF_STICKER + i + "0");
                     String sticker = savedInstanceState.getString(KEY_OF_STICKER + i + "1");
-                    String sticker_png_id = savedInstanceState.getString(KEY_OF_STICKER + i + "2");
-                    StickerCard StickerCard = new StickerCard(username, sticker, Integer.parseInt( sticker_png_id));
+                    //String sticker_png_id = savedInstanceState.getString(KEY_OF_STICKER + i + "2");
+                    StickerCard StickerCard = new StickerCard(username, Integer.parseInt(sticker));// , Integer.parseInt( sticker_png_id));
                     stickerHistory.add(StickerCard);
                 }
             }
@@ -341,7 +359,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
     }
 
 
-    public void sendSticker(String other_username, String sticker) {
+    public void sendSticker(String other_username, int sticker) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -357,16 +375,16 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                 // Need to define a channel ID after Android Oreo
                 String channelId = other_username;
                 // TODO make this not just coffee
-                int pngID = getStickerResourceID(sticker);
+               // int pngID = getStickerResourceID(sticker);
                 NotificationCompat.Builder notifyBuild = new NotificationCompat.Builder(ReceivedActivity.this, channelId)
                         //"Notification icons must be entirely white."
-                        .setSmallIcon(pngID) // get resources sticker
+                        .setSmallIcon(sticker) // get resources sticker
                         .setContentTitle("New Sticker From " + my_username)
                         .setContentText("Subject: " + sticker)
                         .setPriority(NotificationCompat.PRIORITY_HIGH)
                         // hide the notification after its selected
                         .setAutoCancel(true)
-                        .addAction(pngID, "Call", callIntent)
+                        .addAction(sticker, "Call", callIntent)
                         .setContentIntent(pIntent);
                 NotificationManagerCompat notificationManager = NotificationManagerCompat.from(ReceivedActivity.this);
                 // // notificationId is a unique int for each notification that you must define
@@ -376,7 +394,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
     }
 
 
-    private void sendStickerMessageToDB(String other_username, String sticker) {
+    private void sendStickerMessageToDB(String other_username, int sticker) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -494,9 +512,9 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                                     StickerMessage stickerMessage = received_history.get(i);
                                     Log.e(TAG,stickerMessage.toString());
                                     String username = stickerMessage.getUsername();
-                                    String sticker = stickerMessage.getSticker_id();
-                                    int pngID = getStickerResourceID(sticker);
-                                    stickerHistory.add(0, new StickerCard(username, sticker, pngID));
+                                    int sticker = stickerMessage.getSticker_id();
+                                    //int pngID = getStickerResourceID(sticker);
+                                    stickerHistory.add(0, new StickerCard(username, sticker));// , pngID));
                                     receivedStickerAdapter.notifyItemInserted(0);
                                 }
                             }

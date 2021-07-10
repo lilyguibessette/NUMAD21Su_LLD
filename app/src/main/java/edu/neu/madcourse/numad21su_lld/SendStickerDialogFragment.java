@@ -6,12 +6,35 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.Spinner;
+import android.widget.TextView;
 
 import androidx.fragment.app.DialogFragment;
 
 
 public class SendStickerDialogFragment extends DialogFragment {
-    
+    Spinner sticker_spinner;
+    String[] textArray = { "Coffee",
+            "Donut",
+            "Egg",
+            "French Fries",
+            "Hamburger",
+            "Ice Cream",
+            "Milk",
+            "Toast",
+            "Watermwlon"};
+    Integer[] imageArray = { R.drawable.coffee,
+            R.drawable.donut,
+            R.drawable.egg,
+            R.drawable.french_fries,
+            R.drawable.hamburger,
+            R.drawable.ice_cream,
+            R.drawable.milk,
+            R.drawable.toast,
+            R.drawable.watermelon};
+
     public interface SendStickerDialogListener {
         void onDialogPositiveClick(DialogFragment sendDialog);
         void onDialogNegativeClick(DialogFragment sendDialog);
@@ -21,11 +44,18 @@ public class SendStickerDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        // Get the layout inflater
         LayoutInflater inflater = requireActivity().getLayoutInflater();
+        // Get the layout inflater
+        View view = inflater.inflate(R.layout.fragment_send_sticker_dialog, null);
+        sticker_spinner = (Spinner)view.findViewById(R.id.sticker_spinner);
+        TextView text = (TextView) view.findViewById(R.id.spinnerTextView);
+        ImageView imageView =(ImageView) view.findViewById(R.id.spinnerImages);
+        Context context = getContext();
+        SpinnerAdapter adapter = new SpinnerAdapter(context, R.layout.spinner_value_layout, textArray, imageArray);
+        sticker_spinner.setAdapter(adapter);
 
         // TODO Need layout for send dialog
-        builder.setView(inflater.inflate(R.layout.fragment_send_sticker_dialog, null))
+        builder.setView(view)
                 // Add action buttons
                 .setPositiveButton(R.string.send_sticker, new DialogInterface.OnClickListener() {
                     @Override

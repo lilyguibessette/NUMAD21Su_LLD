@@ -2,12 +2,12 @@ package edu.neu.madcourse.numad21su_lld;
 
 public class StickerMessage {
     public String username;
-    public String sticker_id;
+    public int sticker_id;
 
     public StickerMessage(){
     }
 
-    public StickerMessage(String username, String sticker_id){
+    public StickerMessage(String username, int sticker_id){
         this.username = username;
         this.sticker_id = sticker_id;
     }
@@ -16,7 +16,7 @@ public class StickerMessage {
         return this.username;
     }
 
-    public String getSticker_id() {
+    public int getSticker_id() {
         return this.sticker_id;
     }
 }

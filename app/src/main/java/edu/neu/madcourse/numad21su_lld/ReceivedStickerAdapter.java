@@ -28,7 +28,7 @@ public class ReceivedStickerAdapter extends RecyclerView.Adapter<ReceivedSticker
         if (currentItem != null) {
             Log.e("onBindViewHolder",currentItem.toString());
             holder.username.setText(currentItem.getUsername());
-            holder.sticker_png_id.setImageResource(currentItem.getPNGid());
+            holder.sticker_png_id.setImageResource(currentItem.getSticker());
         }
     }
 
