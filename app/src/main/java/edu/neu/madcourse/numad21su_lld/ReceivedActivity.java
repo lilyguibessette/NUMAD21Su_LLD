@@ -374,7 +374,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                                             Log.w(TAG, "FAILED to update received history: " + other_user.toString());
                                         }
                                     });
-                            }
+                        }
                         first_history_data_change = false;
                     }
 
