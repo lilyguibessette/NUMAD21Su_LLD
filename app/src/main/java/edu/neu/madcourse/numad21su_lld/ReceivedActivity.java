@@ -578,7 +578,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
             }
 
             @Override
-            public void onCancelled(@NonNull @NotNull DatabaseError error) {
+            public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(ReceivedActivity.this, "Fail to get data.", Toast.LENGTH_SHORT).show();
             }
         });
