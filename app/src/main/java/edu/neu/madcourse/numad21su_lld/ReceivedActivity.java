@@ -32,7 +32,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -516,7 +515,6 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                         notificationManager.notify(0, notifyBuild.build());
                     }
                 }).start();
-
 
                 stickerHistory.add(0, message);
                 receivedStickerAdapter.notifyItemInserted(0);
