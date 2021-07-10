@@ -7,9 +7,9 @@
     <uses-permission android:name="android.permission.READ_PRIVILEGE_PHONE_STATE"/>
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/muncha_crunch_logo"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/muncha_crunch_logo_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.NUMAD21Su_LLD">
         <activity android:name=".MainActivity">
