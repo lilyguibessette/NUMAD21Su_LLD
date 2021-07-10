@@ -1,5 +1,6 @@
 package edu.neu.madcourse.numad21su_lld;
 
+// TODO: I think we can delete this??
 //https://www.geeksforgeeks.org/gridview-in-android-with-example/
 public class Sticker {
     private String sticker;

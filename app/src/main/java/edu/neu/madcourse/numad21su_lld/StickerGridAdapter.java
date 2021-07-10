@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 
+//TODO: we can delete this now!
 public class StickerGridAdapter extends ArrayAdapter {
     public StickerGridAdapter(@NonNull Context context, ArrayList<Sticker> stickerArrayList) {
         super(context,0,stickerArrayList);

@@ -18,6 +18,7 @@ public class StickerCard {
         return this.sticker;
     }
 
+    // TODO: I think we can delete this now
     public String getStickerPNGID() {
         return String.valueOf(this.sticker);
     }

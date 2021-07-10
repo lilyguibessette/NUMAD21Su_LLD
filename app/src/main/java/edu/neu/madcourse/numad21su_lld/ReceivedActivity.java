@@ -260,13 +260,13 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
     public void viewAccountInformation(View view) {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         final View account_info_view = getLayoutInflater().inflate(R.layout.account_info, null);
-        Button back_button = (Button) account_info_view.findViewById(R.id.back_button);
-        TextView tv_username = account_info_view.findViewById(R.id.my_username);
-        TextView tv_number_sent = account_info_view.findViewById(R.id.my_number_sent);
-        TextView tv_token = account_info_view.findViewById(R.id.my_token);
-        tv_username.setText(my_username);
-        tv_token.setText(my_token);
-        tv_number_sent.setText(String.valueOf(my_number_sent));
+        Button back_button = account_info_view.findViewById(R.id.back_button);
+        TextView tv_username = account_info_view.findViewById(R.id.user_stats);
+        //TextView tv_number_sent = account_info_view.findViewById(R.id.my_number_sent);
+        //TextView tv_token = account_info_view.findViewById(R.id.my_token);
+        tv_username.setText("Way to go!\n" + my_username + " has sent " + my_number_sent + " stickers");
+        //tv_token.setText(my_token);:
+        //tv_number_sent.setText(String.valueOf(my_number_sent));
         dialogBuilder.setView(account_info_view);
         AlertDialog dialog = dialogBuilder.create();
         dialog.show();
