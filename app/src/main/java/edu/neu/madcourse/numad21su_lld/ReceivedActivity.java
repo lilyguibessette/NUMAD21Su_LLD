@@ -56,7 +56,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
     private static final String KEY_OF_STICKER = "KEY_OF_STICKER";
     private static final String NUMBER_OF_STICKERS = "NUMBER_OF_STICKERS";
     // Buttons
-    private FloatingActionButton sendStickerButton;
+    private Button sendStickerButton;
     private Button accountInfoButton;
     // Information for this user
     private String my_username;
@@ -103,6 +103,12 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setLogo(R.drawable.muncha_crunch);
+        getSupportActionBar().setDisplayUseLogoEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
         // Getting current username that is logged in
         SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE);
         my_username = sharedPreferences.getString("userName", "Not found");
