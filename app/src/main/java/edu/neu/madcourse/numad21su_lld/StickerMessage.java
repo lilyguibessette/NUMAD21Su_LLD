@@ -16,10 +16,6 @@ public class StickerMessage {
         return this.username;
     }
 
-    public String getStickerPNGID() {
-        return String.valueOf(this.sticker_id);
-    }
-
     public int getSticker_id() {
         return this.sticker_id;
     }
