@@ -74,8 +74,6 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
     private DatabaseReference allUsersRef;
     private ChildEventListener validatedUsersListener;
     private ChildEventListener myUserHistoryListener;
-    private ChildEventListener myStickerNumberEventListener;
-    private ChildEventListener userEventListener;
     //
     private final Handler handler = new Handler();
     private static final String TAG = ReceivedActivity.class.getSimpleName();
