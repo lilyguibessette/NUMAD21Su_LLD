@@ -149,12 +149,6 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
 
     public void startSendDialog() {
         DialogFragment sendDialog = new SendStickerDialogFragment();
-        Dialog dialog = sendDialog.onCreateDialog(null);
-        TextView text = (TextView) dialog.findViewById(R.id.spinnerTextView);
-        ImageView imageView =(ImageView) dialog.findViewById(R.id.spinnerImages);
-        sticker_spinner = (Spinner) dialog.findViewById(R.id.sticker_spinner);
-        SpinnerAdapter adapter = new SpinnerAdapter(this, R.layout.spinner_value_layout, textArray, imageArray);
-        sticker_spinner.setAdapter(adapter);
         sendDialog.show(getSupportFragmentManager(), "sendDialogFragment");
     }
 
@@ -215,7 +209,11 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         });
         */
 
-
+        TextView text = (TextView) addSendDialog.findViewById(R.id.spinnerTextView);
+        ImageView imageView =(ImageView) addSendDialog.findViewById(R.id.spinnerImages);
+        sticker_spinner = (Spinner) addSendDialog.findViewById(R.id.sticker_spinner);
+        SpinnerAdapter adapter = new SpinnerAdapter(this, R.layout.spinner_value_layout, textArray, imageArray);
+        sticker_spinner.setAdapter(adapter);
 
 
         sticker_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

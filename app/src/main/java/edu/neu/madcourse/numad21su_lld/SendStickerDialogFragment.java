@@ -25,8 +25,6 @@ public class SendStickerDialogFragment extends DialogFragment {
         // Get the layout inflater
         LayoutInflater inflater = requireActivity().getLayoutInflater();
 
-
-
         // TODO Need layout for send dialog
         builder.setView(inflater.inflate(R.layout.fragment_send_sticker_dialog, null))
                 // Add action buttons
