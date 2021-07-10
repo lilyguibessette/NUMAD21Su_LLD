@@ -313,7 +313,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
 
 
     public void sendSticker(String other_username, int sticker) {
-        new Thread(new Runnable() {
+        /*new Thread(new Runnable() {
             @Override
             public void run() {
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -341,7 +341,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                 // // notificationId is a unique int for each notification that you must define
                 notificationManager.notify(0, notifyBuild.build());
             }
-        }).start();
+        }).start();*/
     }
 
 
@@ -487,6 +487,37 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                 Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
                 StickerMessage message = dataSnapshot.getValue(StickerMessage.class);
                 Log.d(TAG, "onChildAdded:" + message.username);
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        FirebaseDatabase database = FirebaseDatabase.getInstance();
+                        // Prepare intent which is triggered if the
+                        // notification is selected
+                        Intent intent = new Intent(ReceivedActivity.this, ReceiveNotificationActivity.class);
+                        PendingIntent pIntent = PendingIntent.getActivity(ReceivedActivity.this, (int) System.currentTimeMillis(), intent, 0);
+                        PendingIntent callIntent = PendingIntent.getActivity(ReceivedActivity.this, (int) System.currentTimeMillis(),
+                                new Intent(ReceivedActivity.this, ReceiveNotificationActivity.class), 0);
+                        // Build notification
+                        // Need to define a channel ID after Android Oreo
+                        String channelId = "Muncha_Crunch_Channel";
+                        NotificationCompat.Builder notifyBuild = new NotificationCompat.Builder(ReceivedActivity.this, channelId)
+                                //"Notification icons must be entirely white."
+                                .setSmallIcon(R.drawable.muncha_crunch) // get resources sticker
+                                .setContentTitle("You got a new sticker from " + message.username)
+                                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                                .setLargeIcon(BitmapFactory.decodeResource(getResources(),message.sticker_id))
+                                // hide the notification after its selected
+                                .setAutoCancel(true)
+                                .addAction(message.sticker_id, "Open Muncha Crunch", callIntent)
+                                .setContentIntent(pIntent);
+                        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(ReceivedActivity.this);
+                        // // notificationId is a unique int for each notification that you must define
+                        notificationManager.notify(0, notifyBuild.build());
+                    }
+                }).start();
+
+
                 stickerHistory.add(0, message);
                 receivedStickerAdapter.notifyItemInserted(0);
             }
