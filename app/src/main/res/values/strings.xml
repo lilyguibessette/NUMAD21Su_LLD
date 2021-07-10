@@ -17,6 +17,12 @@
     <string name="send_sticker_back">Send Sticker Back!</string>
     <string name="new_msg">New message from : </string>
     <string name ="notif_sticker">Sent you a sticker!</string>
+    <string name="sticker_name_desc">sticker name</string>
+    <string name="sticker_image_desc">sticker image</string>
+
+    <string name="channel_name">Notifcation Name</string>s
+    <string name="channel_description">Notification Channel for Muncha Crunch</string>
+    <string name="channel_id">Channel_Name_NUMAD_MC</string>
 
     <string-array name="sticker_array">
         <item>coffee</item>
