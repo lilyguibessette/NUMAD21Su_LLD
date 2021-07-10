@@ -22,13 +22,9 @@ public class ReceivedStickerDialogFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         // Get the layout inflater
         LayoutInflater inflater = requireActivity().getLayoutInflater();
-
-        // TODO: do we want to make the action buttons something like send back a sticker or just OK and close?
         builder.setView(inflater.inflate(R.layout.fragment_received_sticker_dialog, null))
-                // TODO: send back a sticker?
                 .setPositiveButton(R.string.send_sticker_back, (dialog, id) ->
                         listener.onDialogPositiveClick(ReceivedStickerDialogFragment.this))
-                // TODO: close?
                 .setNegativeButton(R.string.close, (dialog, id) ->
                         listener.onDialogNegativeClick(ReceivedStickerDialogFragment.this));
         return builder.create();

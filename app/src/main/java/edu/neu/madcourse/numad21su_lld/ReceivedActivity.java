@@ -113,6 +113,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         }
         createDatabaseResources();
         createNotificationChannel();
+        createItemTouchHelper();
         setContentView(R.layout.activity_received_history);
         received_history_size = 0;
         init(savedInstanceState);
@@ -133,25 +134,22 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                 viewAccountInformation(v);
             }
         });
+    }
+
+
+    public void createItemTouchHelper(){
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
                 return false;
             }
-
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                Toast.makeText(ReceivedActivity.this, "Send Sticker Back!", Toast.LENGTH_SHORT).show();
-                int position = viewHolder.getLayoutPosition();
-                //TODO maybe allow this to open dialog for that particular username?
-                // - autopopulate the username field in the dialog frag?
-                //stickerHistory.remove(position);
+                // Do nothing
             }
         });
         itemTouchHelper.attachToRecyclerView(stickerRecyclerView);
     }
-
-
 
     /**
      * DIALOG TO SEND STICKERS
@@ -160,6 +158,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         DialogFragment sendDialog = new SendStickerDialogFragment();
         sendDialog.show(getSupportFragmentManager(), "sendDialogFragment");
     }
+
 
     public void onDialogPositiveClick(DialogFragment sendDialog) {
         Dialog addSendDialog = sendDialog.getDialog();
