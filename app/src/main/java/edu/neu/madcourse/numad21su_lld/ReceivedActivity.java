@@ -57,7 +57,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
     private Button accountInfoButton;
     private String my_username;
     private String my_token;
-    private Integer sticker_to_send;
+    private Integer sticker_to_send = R.drawable.coffee;
     int received_history_size;
     Spinner sticker_spinner;
     DatabaseReference myUserHistoryRef;
@@ -303,9 +303,11 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                 if (snapshot.exists() && my_username != null) {
                     User user = snapshot.getValue(User.class);
                     Log.d(TAG, "Found: " + my_username);
-                    int my_number_sent = user.stickers_sent;
-                    tv_number_sent.setText(String.valueOf(my_number_sent));
-                    Log.d(TAG, "Number Sent: " + my_username);
+                    if (user != null) {
+                        int my_number_sent = user.getStickers_sent();
+                        tv_number_sent.setText(String.valueOf(my_number_sent));
+                        Log.d(TAG, "Number Sent: " + my_username);
+                    }
                 }
             }
 
