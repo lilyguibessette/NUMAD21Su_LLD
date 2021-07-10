@@ -316,6 +316,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         receivedStickerLayoutManager = new LinearLayoutManager(this);
         stickerRecyclerView = findViewById(R.id.recycler_view);
         stickerRecyclerView.setHasFixedSize(true);
+        updateHistory();
         receivedStickerAdapter = new ReceivedStickerAdapter(stickerHistory);
         stickerRecyclerView.setAdapter(receivedStickerAdapter);
         stickerRecyclerView.setLayoutManager(receivedStickerLayoutManager);
