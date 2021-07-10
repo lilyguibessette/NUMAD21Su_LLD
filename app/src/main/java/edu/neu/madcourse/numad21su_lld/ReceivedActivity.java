@@ -7,7 +7,6 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -116,7 +115,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         setContentView(R.layout.activity_received_history);
         received_history_size = 0;
         init(savedInstanceState);
-        updateHistory();
+//        updateHistory();
         sendStickerButton = findViewById(R.id.sendStickerButton);
         sendStickerButton.setTooltipText("Send a Sticker");
         sendStickerButton.setOnClickListener(new View.OnClickListener() {
@@ -526,14 +525,6 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
     }
 
 
-    public int getStickerResourceID(String sticker){
-        Resources res = getResources();
-        int pngID = res.getIdentifier(sticker+".png" , "drawable", getPackageName());
-        // for now return coffee need to fix ^
-        return R.drawable.coffee;
-    }
-
-
     /**
      * LISTENERS FOR DATA CHANGES
      * - Listen for change for number of stickers sent
@@ -545,6 +536,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         myUserRef = database.getReference("Users/"+my_username);
         myUserHistoryRef = database.getReference("Users/"+my_username+"/received_history");
         allUsersRef = database.getReference("Users");
+        setReceivedHistoryListener();
         setValidatedUsersListener();
     }
 
@@ -562,7 +554,6 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                     }
                 }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(ReceivedActivity.this, "Fail to get data.", Toast.LENGTH_SHORT).show();
