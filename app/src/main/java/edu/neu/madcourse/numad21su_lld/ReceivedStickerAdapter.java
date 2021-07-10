@@ -10,9 +10,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 public class ReceivedStickerAdapter extends RecyclerView.Adapter<ReceivedStickerHolder>{
-    private final ArrayList<StickerCard> stickerHistory;
+    private final ArrayList<StickerMessage> stickerHistory;
 
-    public ReceivedStickerAdapter(ArrayList<StickerCard> stickerHistory) {
+    public ReceivedStickerAdapter(ArrayList<StickerMessage> stickerHistory) {
         this.stickerHistory = stickerHistory;
     }
 
@@ -24,11 +24,11 @@ public class ReceivedStickerAdapter extends RecyclerView.Adapter<ReceivedSticker
 
     @Override
     public void onBindViewHolder(ReceivedStickerHolder holder, int position) {
-        StickerCard currentItem = stickerHistory.get(position);
+        StickerMessage currentItem = stickerHistory.get(position);
         if (currentItem != null) {
             Log.e("onBindViewHolder",currentItem.toString());
             holder.username.setText(currentItem.getUsername());
-            holder.sticker_png_id.setImageResource(currentItem.getSticker());
+            holder.sticker_png_id.setImageResource(currentItem.getSticker_id());
         }
     }
 
