@@ -538,6 +538,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         allUsersRef = database.getReference("Users");
         setReceivedHistoryListener();
         setValidatedUsersListener();
+        setNumberOfStickersListener();
     }
 
     public void setNumberOfStickersListener(){
@@ -566,8 +567,10 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
                 // A new data item has been added, add it to the list
+                Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
                 StickerMessage message = dataSnapshot.getValue(StickerMessage.class);
-                stickerHistory.add(message);
+                Log.d(TAG, "onChildAdded:" + message.username);
+                stickerHistory.add(0, message);
                 receivedStickerAdapter.notifyItemInserted(0);
             }
 
