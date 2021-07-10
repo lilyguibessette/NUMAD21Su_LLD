@@ -6,12 +6,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.widget.GridView;
 
 import androidx.fragment.app.DialogFragment;
 
 
 public class SendStickerDialogFragment extends DialogFragment {
+
 
     public interface SendStickerDialogListener {
         void onDialogPositiveClick(DialogFragment sendDialog);
@@ -24,6 +24,8 @@ public class SendStickerDialogFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         // Get the layout inflater
         LayoutInflater inflater = requireActivity().getLayoutInflater();
+
+
 
         // TODO Need layout for send dialog
         builder.setView(inflater.inflate(R.layout.fragment_send_sticker_dialog, null))

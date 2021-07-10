@@ -16,6 +16,15 @@
         android:hint="@string/username"
         android:inputType="text" />
 
+    <Spinner
+        android:id="@+id/sticker_spinner"
+        android:layout_width="396dp"
+        android:layout_height="63dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="16dp" />
+
     <!--<Spinner
         android:id="@+id/sticker_spinner"
         android:layout_width="396dp"
@@ -28,13 +37,13 @@
         android:fadeScrollbars="false"
         android:spinnerMode="dropdown"
         tools:listitem="@layout/spinner_items"/>-->
-
-    <GridView
-        android:id="@+id/sticker_grid"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:numColumns="3"
-        android:horizontalSpacing="10dp"
-        android:verticalSpacing="10dp"/>
+    <!--
+        <GridView
+            android:id="@+id/sticker_grid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:numColumns="3"
+            android:horizontalSpacing="10dp"
+            android:verticalSpacing="10dp"/>-->
 
 </LinearLayout>
