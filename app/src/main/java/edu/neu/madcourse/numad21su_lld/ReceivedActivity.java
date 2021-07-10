@@ -159,6 +159,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         */
 
         // TODO: not sure if this is where it belongs... might want to move to a SendActivity
+        // https://www.geeksforgeeks.org/gridview-in-android-with-example/
         sticker_grid = findViewById(R.id.sticker_grid);
         ArrayList<Sticker> stickerArrayList = new ArrayList<Sticker>();
         stickerArrayList.add(new Sticker("Coffee", R.drawable.coffee));
