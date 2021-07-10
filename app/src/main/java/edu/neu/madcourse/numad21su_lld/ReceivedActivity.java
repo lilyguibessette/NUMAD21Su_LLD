@@ -7,6 +7,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -115,13 +116,11 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         setContentView(R.layout.activity_received_history);
         received_history_size = 0;
         init(savedInstanceState);
-//        updateHistory();
         sendStickerButton = findViewById(R.id.sendStickerButton);
         sendStickerButton.setTooltipText("Send a Sticker");
         sendStickerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // set validated users
                 startSendDialog();
             }
         });
@@ -150,15 +149,6 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
             }
         });
         itemTouchHelper.attachToRecyclerView(stickerRecyclerView);
-
-        // TODO Configure receiving from database the list of stickers
-        //updateHistory();
-        //TODO this needs to be fixed because i broke our app
-
-        // Need to add these to when receiving from database
-        // --- stickerHistory.add(0, new StickerMessage(username, sticker));
-        // --- receivedStickerAdapter.notifyItemInserted(0);
-        // Also need to keep track of number received and sent
     }
 
 
@@ -189,36 +179,6 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                     Toast.LENGTH_SHORT).show();
         }
     }
-
-/*
-    private void setValidatedUsers(){
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myUserRef = database.getReference("Users");
-        myUserRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot.exists()){
-                    //
-                    Users users = snapshot.getValue(Users.class);
-                    ArrayList<User> user_list = users.getUsers();
-                    for (int i = 0; i < user_list.size(); i++){
-                        User user = user_list.get(i);
-                        validatedUsers.put(user.getUsername(), true);
-                    }
-                    Toast.makeText(ReceivedActivity.this, "Validated all users in database", Toast.LENGTH_SHORT).show();
-                    Log.d(TAG, "Validated all users in database ");
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull @NotNull DatabaseError error) {
-                Toast.makeText(ReceivedActivity.this, "Failed to get data.", Toast.LENGTH_SHORT).show();
-                Log.e(TAG, "Cancelled, failed to get data");
-            }
-        });
-    }
-*/
-
-    // TODO validate username - this seems to be a little wonky on the first validation - after the second time it is able to send a notif
     private boolean isValidUsername(String other_username) {
         if (validatedUsers.containsKey(other_username) && validatedUsers.get(other_username)){
             Log.d(TAG, "Already Validated: " + other_username);
@@ -317,19 +277,17 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
             }
         });
     }
-
     public void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = my_username;
-            String description = "Notifications for "+ my_username;
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel(my_username, name, importance);
-            channel.setDescription(description);
+            NotificationChannel channel = new NotificationChannel
+                    ("Muncha_Crunch_Channel", my_username, NotificationManager.IMPORTANCE_DEFAULT);
+            channel.setDescription("Notifications for "+ my_username);
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
             subscribeToMyMessages();
         }
     }
+
 
     public void subscribeToMyMessages() {
         FirebaseMessaging.getInstance().subscribeToTopic(my_username)
@@ -364,17 +322,15 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                 // Build notification
                 // Need to define a channel ID after Android Oreo
                 String channelId = other_username;
-                // TODO make this not just coffee
-               // int pngID = getStickerResourceID(sticker);
                 NotificationCompat.Builder notifyBuild = new NotificationCompat.Builder(ReceivedActivity.this, channelId)
                         //"Notification icons must be entirely white."
                         .setSmallIcon(R.drawable.muncha_crunch) // get resources sticker
-                        .setContentTitle("New Sticker From " + my_username)
-                        .setContentText("Subject: " + sticker)
+                        .setContentTitle("You got a new sticker from " + my_username)
                         .setPriority(NotificationCompat.PRIORITY_HIGH)
+                        .setLargeIcon(BitmapFactory.decodeResource(getResources(),sticker))
                         // hide the notification after its selected
                         .setAutoCancel(true)
-                        .addAction(sticker, "Call", callIntent)
+                        .addAction(sticker, "Open Muncha Crunch", callIntent)
                         .setContentIntent(pIntent);
                 NotificationManagerCompat notificationManager = NotificationManagerCompat.from(ReceivedActivity.this);
                 // // notificationId is a unique int for each notification that you must define
@@ -480,50 +436,6 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         handler.post(() -> {Toast.makeText(ReceivedActivity.this, "Status from Server: " + resp, Toast.LENGTH_SHORT).show();});
     }
         */
-
-    private void updateHistory() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                FirebaseDatabase database = FirebaseDatabase.getInstance();
-                myUserHistoryRef = database.getReference("Users/"+my_username);
-                myUserHistoryRef.addValueEventListener(new ValueEventListener() {
-                    public User my_user;
-                    public boolean init = true;
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists() && my_username != null && init) {
-                            my_user = dataSnapshot.getValue(User.class);
-                            // Check size of received history
-                            ArrayList<StickerMessage> received_history = my_user.getReceived_history();
-                            int new_received_history_size = received_history.size();
-                            if (new_received_history_size > received_history_size) {
-                                Log.e(TAG,String.valueOf(new_received_history_size));
-                                for (int i = 0; i < new_received_history_size; i++) {
-                                    StickerMessage stickerMessage = received_history.get(i);
-                                    Log.e(TAG,stickerMessage.toString());
-                                    String username = stickerMessage.getUsername();
-                                    int sticker = stickerMessage.getSticker_id();
-                                    //int pngID = getStickerResourceID(sticker);
-                                    stickerHistory.add(0, new StickerMessage(username, sticker));// , pngID));
-                                    receivedStickerAdapter.notifyItemInserted(0);
-                                }
-                            }
-                        }
-                        init = false;
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        // Getting Post failed, log a message
-                        Log.w(TAG, "my_user sendStickerMessageToDB onCancelled", databaseError.toException());
-                    }
-                });
-
-            }
-        }).start();
-    }
-
 
     /**
      * LISTENERS FOR DATA CHANGES
