@@ -182,14 +182,19 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                     Toast.LENGTH_SHORT).show();
         }
     }
+
+    // Determine if an input userName is valid
     private boolean isValidUsername(String other_username) {
+        // Check database for username
         if (validatedUsers.containsKey(other_username) && validatedUsers.get(other_username)){
             Log.d(TAG, "Already Validated: " + other_username);
             return true;
         }
+        // If username is not valid, check if it exists in the db and validate it
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference otherUserRef = database.getReference("Users/" + other_username);
         otherUserRef.addValueEventListener(new ValueEventListener() {
+
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.exists()){
@@ -198,6 +203,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                     Log.d(TAG, "Validated: " + other_username);
                 }
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(ReceivedActivity.this, "Failed to get data.", Toast.LENGTH_SHORT).show();
@@ -208,6 +214,8 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         if (validatedUsers.containsKey(other_username) && validatedUsers.get(other_username)){
             return true;
         }
+
+        // If user is not validated and doesn't exist in db, return false
         return false;
     }
 
