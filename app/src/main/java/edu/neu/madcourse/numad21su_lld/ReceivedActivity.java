@@ -494,7 +494,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         myUserHistoryRef.addChildEventListener(myUserHistoryListener);
     }
 
-
+    // If validated users gets updated, update this devices version to match
     private void setValidatedUsersListener() {
         validatedUsersListener = new ChildEventListener() {
             @Override
