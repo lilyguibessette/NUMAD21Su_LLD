@@ -33,6 +33,7 @@ public class SpinnerAdapter extends ArrayAdapter<String> {
         return getTextImageView(position, convertView, parent);
     }
 
+    // set the information for each row in the spinner from the input cotent and image arrays
     public View getTextImageView(int position, View convertView, ViewGroup parent) {
 
         LayoutInflater inflater = (LayoutInflater)ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
