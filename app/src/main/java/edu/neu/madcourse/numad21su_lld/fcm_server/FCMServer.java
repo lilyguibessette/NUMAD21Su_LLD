@@ -18,7 +18,7 @@ import edu.neu.madcourse.numad21su_lld.ReceivedActivity;
 
 
 //TODO SET THIS UP?
-public class FCMServer  extends FirebaseMessagingService {
+public class FCMServer extends FirebaseMessagingService {
     private static final String TAG = FCMServer.class.getSimpleName();
     private static final String CHANNEL_ID = "CHANNEL_ID";
     private static final String CHANNEL_NAME = "CHANNEL_NAME";
@@ -80,49 +80,10 @@ public class FCMServer  extends FirebaseMessagingService {
         }
     }
 
-
     /**
      * Create and show a simple notification containing the received FCM message.
      *
-     * @param remoteMessage FCM message  received.
-     */
-    @Deprecated
-    private void showNotification(RemoteMessage remoteMessage) {
-        Intent intent = new Intent(this, FCMServer.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
-                PendingIntent.FLAG_ONE_SHOT);
-
-        Notification notification;
-        NotificationCompat.Builder builder;
-        NotificationManager notificationManager = getSystemService(NotificationManager.class);
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
-            // Configure the notification channel
-            notificationChannel.setDescription(CHANNEL_DESCRIPTION);
-            notificationManager.createNotificationChannel(notificationChannel);
-            builder = new NotificationCompat.Builder(this, CHANNEL_ID);
-
-        } else {
-            builder = new NotificationCompat.Builder(this);
-        }
-
-        notification = builder.setContentTitle(remoteMessage.getNotification().getTitle())
-                .setContentText(remoteMessage.getNotification().getBody())
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setAutoCancel(true)
-                .setContentIntent(pendingIntent)
-                .build();
-        notificationManager.notify(0, notification);
-
-    }
-
-    /**
-     * Create and show a simple notification containing the received FCM message.
-     *
-     * @param remoteMessageNotification FCM message  received.
+     * @param remoteMessageNotification FCM message received.
      */
     private void showNotification(RemoteMessage.Notification remoteMessageNotification) {
 
