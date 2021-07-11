@@ -7,6 +7,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
@@ -79,45 +80,7 @@ public class FCMServer  extends FirebaseMessagingService {
             }
         }
     }
-
-
-    /**
-     * Create and show a simple notification containing the received FCM message.
-     *
-     * @param remoteMessage FCM message  received.
-     */
-    @Deprecated
-    private void showNotification(RemoteMessage remoteMessage) {
-        Intent intent = new Intent(this, FCMServer.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
-                PendingIntent.FLAG_ONE_SHOT);
-
-        Notification notification;
-        NotificationCompat.Builder builder;
-        NotificationManager notificationManager = getSystemService(NotificationManager.class);
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
-            // Configure the notification channel
-            notificationChannel.setDescription(CHANNEL_DESCRIPTION);
-            notificationManager.createNotificationChannel(notificationChannel);
-            builder = new NotificationCompat.Builder(this, CHANNEL_ID);
-
-        } else {
-            builder = new NotificationCompat.Builder(this);
-        }
-
-        notification = builder.setContentTitle(remoteMessage.getNotification().getTitle())
-                .setContentText(remoteMessage.getNotification().getBody())
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setAutoCancel(true)
-                .setContentIntent(pendingIntent)
-                .build();
-        notificationManager.notify(0, notification);
-
-    }
+    
 
     /**
      * Create and show a simple notification containing the received FCM message.
@@ -137,7 +100,8 @@ public class FCMServer  extends FirebaseMessagingService {
         NotificationManager notificationManager = getSystemService(NotificationManager.class);
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
+            NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID,
+                    CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
             // Configure the notification channel
             notificationChannel.setDescription(CHANNEL_DESCRIPTION);
             notificationManager.createNotificationChannel(notificationChannel);
@@ -147,9 +111,11 @@ public class FCMServer  extends FirebaseMessagingService {
             builder = new NotificationCompat.Builder(this);
         }
         notification = builder.setContentTitle(remoteMessageNotification.getTitle())
-                .setContentText(remoteMessageNotification.getBody())
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentText("You got a sticker!")
+                .setSmallIcon(R.mipmap.muncha_crunch_logo)
                 .setAutoCancel(true)
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(),
+                        Integer.parseInt(remoteMessageNotification.getBody())))
                 .setContentIntent(pendingIntent)
                 .build();
         notificationManager.notify(0, notification);

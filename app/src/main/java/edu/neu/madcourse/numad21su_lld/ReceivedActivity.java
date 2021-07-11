@@ -309,7 +309,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                 JSONObject jNotification = new JSONObject();
                 try {
 
-                    jNotification.put("title", "New Sticker from "+ my_username);
+                    jNotification.put("title", "New Sticker from " + my_username);
                     jNotification.put("body", sticker_to_send);
                     jNotification.put("sound", "default");
                     jNotification.put("badge", "1");
@@ -318,7 +318,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
 
                     // Populate the Payload object.
                     // Note that "to" is a topic, not a token representing an app instance
-                    jPayload.put("to", "/topics/"+other_user);
+                    jPayload.put("to", "/topics/" + other_user);
                     jPayload.put("priority", "high");
                     jPayload.put("notification", jNotification);
                 } catch (JSONException e) {
