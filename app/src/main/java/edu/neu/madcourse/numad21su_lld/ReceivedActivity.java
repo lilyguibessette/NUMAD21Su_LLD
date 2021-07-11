@@ -289,8 +289,6 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                     jNotification.put("body", sticker_to_send);
                     jNotification.put("sound", "default");
                     jNotification.put("badge", "1");
-                    //TODO FIX THIS
-                    // jNotification.put("click_action", "OPEN_ACTIVITY_1");
 
                     // Populate the Payload object.
                     // Note that "to" is a topic, not a token representing an app instance
@@ -331,7 +329,6 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
             public void run() {
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference otherUserRef = database.getReference("Users/"+other_username);
-                // TODO How to update data in the database
                 otherUserRef.addValueEventListener(new ValueEventListener() {
                     public User other_user;
                     public Boolean first_history_data_change = true;

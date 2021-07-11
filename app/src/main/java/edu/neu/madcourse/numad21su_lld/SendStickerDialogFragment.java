@@ -57,7 +57,6 @@ public class SendStickerDialogFragment extends DialogFragment {
         SpinnerAdapter adapter = new SpinnerAdapter(context, R.layout.spinner_value_layout, textArray, imageArray);
         sticker_spinner.setAdapter(adapter);
 
-        // TODO Need layout for send dialog
         builder.setView(view)
                 // Add action buttons
                 .setPositiveButton(R.string.send_sticker, new DialogInterface.OnClickListener() {

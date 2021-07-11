@@ -27,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
     public String my_username;
     private static final String USERNAME = "USERNAME";
     private static String CLIENT_REGISTRATION_TOKEN;
-    //TODO change this from hardcode to a getter/resource or something
     private static String SERVER_KEY = "key=AAAA5-WnK0Y:APA91bGSNkJBv6lna--2EgJvdjxNtxt1eUc8yTKroB8nKJ3Tq_VSrWjSDFJ4ydON6OxM5sRr8QRNcnnZAXiTTzTL6dib9_XJIJEGe75h0oHKjrbvJMENomYQuZZUq0OiDrksuKPffK74\t\n";
     private User userObject;
     private Integer[] labels;
