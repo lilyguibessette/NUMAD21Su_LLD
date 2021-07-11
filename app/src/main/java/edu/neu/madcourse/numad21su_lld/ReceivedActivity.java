@@ -75,19 +75,12 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
     private DatabaseReference allUsersRef;
     private ChildEventListener validatedUsersListener;
     private ChildEventListener myUserHistoryListener;
+
     //
-    private final Handler handler = new Handler();
     private static final String TAG = ReceivedActivity.class.getSimpleName();
     private static final String SERVER_KEY = "key=AAAA5-WnK0Y:APA91bGSNkJBv6lna--2EgJvdjxNtxt1eUc8yTKroB8nKJ3Tq_VSrWjSDFJ4ydON6OxM5sRr8QRNcnnZAXiTTzTL6dib9_XJIJEGe75h0oHKjrbvJMENomYQuZZUq0OiDrksuKPffK74";
-    String[] textArray = { "Coffee",
-            "Donut",
-            "Egg",
-            "French Fries",
-            "Hamburger",
-            "Ice Cream",
-            "Milk",
-            "Toast",
-            "Watermwlon"};
+
+    // ImageArray stores the IDs of our drawables
     Integer[] imageArray = { R.drawable.coffee,
             R.drawable.donut,
             R.drawable.egg,
@@ -114,16 +107,26 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE);
         my_username = sharedPreferences.getString("userName", "Not found");
         my_token = sharedPreferences.getString("CLIENT_REGISTRATION_TOKEN", "Not found");
+
+        // If we don't have the userName or token, restart the login activity
         if(my_username == "Not found" || my_token == "Not found"){
             Intent intent = new Intent(ReceivedActivity.this, MainActivity.class);
             startActivity(intent);
         }
+
+        // Initialize resources, notification channel, sticker behavior and set content view
         createDatabaseResources();
         createNotificationChannel();
         createItemTouchHelper();
         setContentView(R.layout.activity_received_history);
+
+        // Initialize our received history size to 0
         received_history_size = 0;
+
+        // get saved state and initialize the recyclerview
         init(savedInstanceState);
+
+        // Define button actions
         sendStickerButton = findViewById(R.id.sendStickerButton);
         sendStickerButton.setTooltipText("Send a Sticker");
         sendStickerButton.setOnClickListener(new View.OnClickListener() {
@@ -143,6 +146,10 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         });
     }
 
+    private void init(Bundle savedInstanceState) {
+        initialStickerData(savedInstanceState);
+        createRecyclerView();
+    }
 
     public void createItemTouchHelper(){
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
@@ -232,10 +239,6 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         super.onSaveInstanceState(outState);
     }
 
-    private void init(Bundle savedInstanceState) {
-        initialStickerData(savedInstanceState);
-        createRecyclerView();
-    }
 
     private void initialStickerData(Bundle savedInstanceState) {
         if (savedInstanceState != null && savedInstanceState.containsKey(NUMBER_OF_STICKERS)) {
