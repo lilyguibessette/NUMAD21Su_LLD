@@ -330,18 +330,17 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         }).start();
     }
 
+    // Subscribe a user to their own topic so they can receive notifications when they get messages
     public void subscribeToMyMessages() {
         FirebaseMessaging.getInstance().subscribeToTopic(my_username)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        String msg = "Subscribed to "+my_username;
+                        String msg = "Subscribed to " + my_username;
                         if (!task.isSuccessful()) {
                             msg = "Failed to subscribe to "+my_username;
-                            Toast.makeText(ReceivedActivity.this, "Something is wrong!", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(ReceivedActivity.this, msg, Toast.LENGTH_SHORT).show();
                         }
+                        Toast.makeText(ReceivedActivity.this, msg, Toast.LENGTH_SHORT).show();
                     }
                 });
     }
