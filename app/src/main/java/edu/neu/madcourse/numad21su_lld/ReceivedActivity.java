@@ -343,20 +343,28 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                 });
     }
 
+    // send a sticker to another user's entry in the realtime db
     private void sendStickerMessageToDB(String other_username, int sticker) {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                // get references to database
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference otherUserRef = database.getReference("Users/"+other_username);
+
+                // update other user's message history with new message
                 otherUserRef.addValueEventListener(new ValueEventListener() {
                     public User other_user;
                     public Boolean first_history_data_change = true;
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
+                        // get other user so we can add a new message
                         other_user = dataSnapshot.getValue(User.class);
                         if (other_user != null && first_history_data_change){
+                            // add message to user
                             other_user.addMessage(new StickerMessage(my_username, sticker));
+
+                            // set other user to the newly updates other user
                             otherUserRef.setValue(other_user).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
@@ -381,7 +389,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
 
                 });
 
-                // This is working
+                // Update user stats for sending message
                 DatabaseReference myUserRef = database.getReference("Users/"+my_username);
                 myUserRef.addValueEventListener(new ValueEventListener() {
                     public User my_user;
