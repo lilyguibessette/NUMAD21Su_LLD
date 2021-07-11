@@ -288,6 +288,8 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
             }
         });
     }
+
+    // Create notification channel and subscribe user to their channel
     public void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel
@@ -299,7 +301,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         }
     }
 
-
+    // FireBase Message to user topic when sending sticker
     public void sendStickertoUserTopic(String other_user, int sticker_to_send) {
         new Thread(new Runnable() {
             @Override
@@ -312,8 +314,8 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                     jNotification.put("sound", "default");
                     jNotification.put("badge", "1");
 
-                    // Populate the Payload object.
-                    // Note that "to" is a topic, not a token representing an app instance
+                    // Populate the Payload object with our notification information
+                    // sent to topic of the user we're sending to
                     jPayload.put("to", "/topics/" + other_user);
                     jPayload.put("priority", "high");
                     jPayload.put("notification", jNotification);
@@ -321,10 +323,9 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                     e.printStackTrace();
                 }
 
-                final String resp = Utils.fcmHttpConnection(SERVER_KEY, jPayload);
+                final String messageResponse = Utils.fcmHttpConnection(SERVER_KEY, jPayload);
                 Log.d(TAG, "STICKER SENT TO " + other_user);
-                Log.d(TAG, resp);
-                //Utils.postToastMessage("Status from Server: " + resp, getApplicationContext());
+                Log.d(TAG, messageResponse);
             }
         }).start();
     }
