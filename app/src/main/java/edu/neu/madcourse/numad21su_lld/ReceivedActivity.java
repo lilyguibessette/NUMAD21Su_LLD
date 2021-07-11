@@ -148,29 +148,36 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         createRecyclerView();
     }
 
-    /**
-     * DIALOG TO SEND STICKERS
-     */
+    // Starts send dialog
     public void startSendDialog() {
         DialogFragment sendDialog = new SendStickerDialogFragment();
         sendDialog.show(getSupportFragmentManager(), "sendDialogFragment");
     }
 
-
     public void onDialogPositiveClick(DialogFragment sendDialog) {
         Dialog addSendDialog = sendDialog.getDialog();
         String other_username = ((EditText) addSendDialog.findViewById(R.id.username)).getText().toString();
+
+        // get selected sticker from spinner
         sticker_spinner = addSendDialog.findViewById(R.id.sticker_spinner);
         sticker_to_send = imageArray[sticker_spinner.getSelectedItemPosition()];
+
+        // If username to send to is valid, run send operations
         if (isValidUsername(other_username)) {
             sendDialog.dismiss();
+
+            // Use FireBaseMessaging to push a notification that sticker was sent
             sendStickertoUserTopic(other_username, sticker_to_send);
+
+            // push sticker to database
             sendStickerMessageToDB(other_username, sticker_to_send);
+
+            // Inform user that sticker was sent
             View parentLayout = findViewById(android.R.id.content);
             Snackbar.make(parentLayout, R.string.send_sticker_confirm, Snackbar.LENGTH_SHORT)
                     .setAction("Action", null).show();
         } else {
-            //invalid username
+            // inform of invalid username
             Toast.makeText(ReceivedActivity.this, R.string.send_sticker_error,
                     Toast.LENGTH_SHORT).show();
         }
