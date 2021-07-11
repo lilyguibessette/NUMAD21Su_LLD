@@ -91,8 +91,6 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
             R.drawable.toast,
             R.drawable.watermelon};
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -117,7 +115,6 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         // Initialize resources, notification channel, sticker behavior and set content view
         createDatabaseResources();
         createNotificationChannel();
-        createItemTouchHelper();
         setContentView(R.layout.activity_received_history);
 
         // Initialize our received history size to 0
@@ -149,20 +146,6 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
     private void init(Bundle savedInstanceState) {
         initialStickerData(savedInstanceState);
         createRecyclerView();
-    }
-
-    public void createItemTouchHelper(){
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
-            @Override
-            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-                return false;
-            }
-            @Override
-            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                // Do nothing
-            }
-        });
-        itemTouchHelper.attachToRecyclerView(stickerRecyclerView);
     }
 
     /**
