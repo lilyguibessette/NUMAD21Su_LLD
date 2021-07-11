@@ -73,7 +73,6 @@ public class MainActivity extends AppCompatActivity {
                 my_username = ((EditText) findViewById(R.id.enter_username)).getText().toString();
                 Intent intent = new Intent(MainActivity.this, ReceivedActivity.class);
                 // Write a message to the database
-                // TODO fix because this overwrites all past history -- fixed i think
                 login_user();
                 // Store the userName in shared preferences to skip login if already done
                 SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE);
