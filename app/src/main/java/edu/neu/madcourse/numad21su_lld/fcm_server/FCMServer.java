@@ -1,7 +1,6 @@
 package edu.neu.madcourse.numad21su_lld.fcm_server;
 
 
-// reference: https://github.com/firebase/quickstart-android
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -18,10 +17,13 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 import edu.neu.madcourse.numad21su_lld.R;
 import edu.neu.madcourse.numad21su_lld.ReceivedActivity;
 
 // Reference: Firebase Demo 3 from coursework
+// Reference: https://github.com/firebase/quickstart-android
 
 public class FCMServer extends FirebaseMessagingService {
     private static final String TAG = FCMServer.class.getSimpleName();
@@ -49,13 +51,15 @@ public class FCMServer extends FirebaseMessagingService {
 
     private void myClassifier(RemoteMessage remoteMessage) {
         String identifier = remoteMessage.getFrom();
-        
+
+        // if the identifier information is not null and has a topic, show the notification
         if (identifier != null) {
             if (identifier.contains("topic")) {
                 if (remoteMessage.getNotification() != null) {
                     showNotification(remoteMessage.getNotification());
                 }
 
+            // if it doesn't but it has a message size greater than 0, also show the notification
             } else {
                 if (remoteMessage.getData().size() > 0) {
                     showNotification(remoteMessage.getNotification());
@@ -64,44 +68,36 @@ public class FCMServer extends FirebaseMessagingService {
         }
     }
 
-    /**
-     * Create and show a simple notification containing the received FCM message.
-     *
-     * @param remoteMessageNotification FCM message received.
-     */
     private void showNotification(RemoteMessage.Notification remoteMessageNotification) {
 
         Intent intent = new Intent(this, ReceivedActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
         Notification notification;
         NotificationCompat.Builder builder;
         NotificationManager notificationManager = getSystemService(NotificationManager.class);
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID,
-                    CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
-            // Configure the notification channel
-            notificationChannel.setDescription(CHANNEL_DESCRIPTION);
-            notificationManager.createNotificationChannel(notificationChannel);
-            builder = new NotificationCompat.Builder(this, CHANNEL_ID);
+        NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID,
+                CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
 
-        } else {
-            builder = new NotificationCompat.Builder(this);
-        }
+        // Configure the notification channel
+        notificationChannel.setDescription(CHANNEL_DESCRIPTION);
+        notificationManager.createNotificationChannel(notificationChannel);
+        builder = new NotificationCompat.Builder(this, CHANNEL_ID);
+
+        // designing the notification bar with the icon in it
         notification = builder.setContentTitle(remoteMessageNotification.getTitle())
                 .setContentText("You got a sticker!")
                 .setSmallIcon(R.mipmap.muncha_crunch_logo)
                 .setAutoCancel(true)
                 .setLargeIcon(BitmapFactory.decodeResource(getResources(),
-                        Integer.parseInt(remoteMessageNotification.getBody())))
+                        Integer.parseInt(Objects.requireNonNull(
+                                remoteMessageNotification.getBody()))))
                 .setContentIntent(pendingIntent)
                 .build();
         notificationManager.notify(0, notification);
-
     }
-
 }
