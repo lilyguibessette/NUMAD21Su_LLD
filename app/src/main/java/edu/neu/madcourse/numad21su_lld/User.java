@@ -8,10 +8,6 @@ public class User {
     public ArrayList<StickerMessage> received_history;
     public int stickers_sent;
 
-
-    public User(){
-    }
-
     public User(String username, String token){
         this.username = username;
         this.token = token;
