@@ -21,7 +21,7 @@ public class SendStickerDialogFragment extends DialogFragment {
             "Ice Cream",
             "Milk",
             "Toast",
-            "Watermwlon"};
+            "Watermelon"};
     Integer[] imageArray = {
             R.drawable.coffee,
             R.drawable.donut,

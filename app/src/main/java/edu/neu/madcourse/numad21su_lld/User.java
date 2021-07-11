@@ -8,23 +8,12 @@ public class User {
     public ArrayList<StickerMessage> received_history;
     public int stickers_sent;
 
-
-    public User(){
-    }
-
     public User(String username, String token){
         this.username = username;
         this.token = token;
         this.stickers_sent = 0;
         this.received_history = new ArrayList<StickerMessage>();
         this.received_history.add(new StickerMessage("WELCOME", R.drawable.muncha_crunch));
-    }
-
-    public User(String username, String token, int stickers_sent, ArrayList<StickerMessage> received_history){
-        this.username = username;
-        this.token = token;
-        this.stickers_sent = stickers_sent;
-        this.received_history = received_history;
     }
 
     public String getUsername() {
