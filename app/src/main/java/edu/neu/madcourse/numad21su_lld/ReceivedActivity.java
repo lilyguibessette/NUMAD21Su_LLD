@@ -227,11 +227,11 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
+        // Save the sticker history so we can retrieve it on orientation change
         int size = stickerHistory == null ? 0 : stickerHistory.size();
         outState.putInt(NUMBER_OF_STICKERS, size);
         for (int i = 0; i < size; i++) {
             outState.putString(KEY_OF_STICKER + i + "0", stickerHistory.get(i).getUsername());
-            //outState.putString(KEY_OF_STICKER + i + "1", stickerHistory.get(i).getSticker());
             outState.putString(KEY_OF_STICKER + i + "1", String.valueOf(stickerHistory.get(i).getSticker_id()));
         }
         super.onSaveInstanceState(outState);
@@ -239,6 +239,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
 
 
     private void initialStickerData(Bundle savedInstanceState) {
+        // recreate the sticker history on orientation change or open
         if (savedInstanceState != null && savedInstanceState.containsKey(NUMBER_OF_STICKERS)) {
             if (stickerHistory == null || stickerHistory.size() == 0) {
                 int size = savedInstanceState.getInt(NUMBER_OF_STICKERS);
@@ -246,7 +247,6 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                 for (int i = 0; i < size; i++) {
                     String username = savedInstanceState.getString(KEY_OF_STICKER + i + "0");
                     String sticker = savedInstanceState.getString(KEY_OF_STICKER + i + "1");
-                    //String sticker_png_id = savedInstanceState.getString(KEY_OF_STICKER + i + "2");
                     StickerMessage StickerMessage = new StickerMessage(username, Integer.parseInt(sticker));// , Integer.parseInt( sticker_png_id));
                     stickerHistory.add(StickerMessage);
                 }
@@ -255,6 +255,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
     }
 
     private void createRecyclerView() {
+        // Create the recyclerview and populate it with the sticker history
         receivedStickerLayoutManager = new LinearLayoutManager(this);
         stickerRecyclerView = findViewById(R.id.recycler_view);
         stickerRecyclerView.setHasFixedSize(true);
@@ -265,15 +266,21 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
 
 
     public void viewAccountInformation(View view) {
+        // Show user information in a new dialog
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         final View account_info_view = getLayoutInflater().inflate(R.layout.account_info, null);
+
+        // populate dialog with user information
         Button back_button = account_info_view.findViewById(R.id.back_button);
         TextView tv_username = account_info_view.findViewById(R.id.user_stats);
         tv_username.setText("Way to go!\n" + my_username + " has sent " + my_number_sent + " stickers");
 
+        // create and show the dialog
         dialogBuilder.setView(account_info_view);
         AlertDialog dialog = dialogBuilder.create();
         dialog.show();
+
+        // set back button action
         back_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
