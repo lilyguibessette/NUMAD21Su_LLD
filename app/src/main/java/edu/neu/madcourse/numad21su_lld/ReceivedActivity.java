@@ -146,41 +146,53 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         createRecyclerView();
     }
 
-    /**
-     * DIALOG TO SEND STICKERS
-     */
+    // Starts send dialog
     public void startSendDialog() {
         DialogFragment sendDialog = new SendStickerDialogFragment();
         sendDialog.show(getSupportFragmentManager(), "sendDialogFragment");
     }
 
-
     public void onDialogPositiveClick(DialogFragment sendDialog) {
         Dialog addSendDialog = sendDialog.getDialog();
         String other_username = ((EditText) addSendDialog.findViewById(R.id.username)).getText().toString();
+
+        // get selected sticker from spinner
         sticker_spinner = addSendDialog.findViewById(R.id.sticker_spinner);
         sticker_to_send = imageArray[sticker_spinner.getSelectedItemPosition()];
+
+        // If username to send to is valid, run send operations
         if (isValidUsername(other_username)) {
             sendDialog.dismiss();
+
+            // Use FireBaseMessaging to push a notification that sticker was sent
             sendStickertoUserTopic(other_username, sticker_to_send);
+
+            // push sticker to database
             sendStickerMessageToDB(other_username, sticker_to_send);
+
+            // Inform user that sticker was sent
             View parentLayout = findViewById(android.R.id.content);
             Snackbar.make(parentLayout, R.string.send_sticker_confirm, Snackbar.LENGTH_SHORT)
                     .setAction("Action", null).show();
         } else {
-            //invalid username
+            // inform of invalid username
             Toast.makeText(ReceivedActivity.this, R.string.send_sticker_error,
                     Toast.LENGTH_SHORT).show();
         }
     }
+
+    // Determine if an input userName is valid
     private boolean isValidUsername(String other_username) {
+        // Check database for username
         if (validatedUsers.containsKey(other_username) && validatedUsers.get(other_username)){
             Log.d(TAG, "Already Validated: " + other_username);
             return true;
         }
+        // If username is not valid, check if it exists in the db and validate it
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference otherUserRef = database.getReference("Users/" + other_username);
         otherUserRef.addValueEventListener(new ValueEventListener() {
+
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.exists()){
@@ -189,6 +201,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                     Log.d(TAG, "Validated: " + other_username);
                 }
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(ReceivedActivity.this, "Failed to get data.", Toast.LENGTH_SHORT).show();
@@ -199,6 +212,8 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         if (validatedUsers.containsKey(other_username) && validatedUsers.get(other_username)){
             return true;
         }
+
+        // If user is not validated and doesn't exist in db, return false
         return false;
     }
 
@@ -210,11 +225,11 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
+        // Save the sticker history so we can retrieve it on orientation change
         int size = stickerHistory == null ? 0 : stickerHistory.size();
         outState.putInt(NUMBER_OF_STICKERS, size);
         for (int i = 0; i < size; i++) {
             outState.putString(KEY_OF_STICKER + i + "0", stickerHistory.get(i).getUsername());
-            //outState.putString(KEY_OF_STICKER + i + "1", stickerHistory.get(i).getSticker());
             outState.putString(KEY_OF_STICKER + i + "1", String.valueOf(stickerHistory.get(i).getSticker_id()));
         }
         super.onSaveInstanceState(outState);
@@ -222,6 +237,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
 
 
     private void initialStickerData(Bundle savedInstanceState) {
+        // recreate the sticker history on orientation change or open
         if (savedInstanceState != null && savedInstanceState.containsKey(NUMBER_OF_STICKERS)) {
             if (stickerHistory == null || stickerHistory.size() == 0) {
                 int size = savedInstanceState.getInt(NUMBER_OF_STICKERS);
@@ -229,7 +245,6 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                 for (int i = 0; i < size; i++) {
                     String username = savedInstanceState.getString(KEY_OF_STICKER + i + "0");
                     String sticker = savedInstanceState.getString(KEY_OF_STICKER + i + "1");
-                    //String sticker_png_id = savedInstanceState.getString(KEY_OF_STICKER + i + "2");
                     StickerMessage StickerMessage = new StickerMessage(username, Integer.parseInt(sticker));// , Integer.parseInt( sticker_png_id));
                     stickerHistory.add(StickerMessage);
                 }
@@ -238,6 +253,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
     }
 
     private void createRecyclerView() {
+        // Create the recyclerview and populate it with the sticker history
         receivedStickerLayoutManager = new LinearLayoutManager(this);
         stickerRecyclerView = findViewById(R.id.recycler_view);
         stickerRecyclerView.setHasFixedSize(true);
@@ -248,15 +264,21 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
 
 
     public void viewAccountInformation(View view) {
+        // Show user information in a new dialog
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         final View account_info_view = getLayoutInflater().inflate(R.layout.account_info, null);
+
+        // populate dialog with user information
         Button back_button = account_info_view.findViewById(R.id.back_button);
         TextView tv_username = account_info_view.findViewById(R.id.user_stats);
         tv_username.setText("Way to go!\n" + my_username + " has sent " + my_number_sent + " stickers");
 
+        // create and show the dialog
         dialogBuilder.setView(account_info_view);
         AlertDialog dialog = dialogBuilder.create();
         dialog.show();
+
+        // set back button action
         back_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -264,6 +286,8 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
             }
         });
     }
+
+    // Create notification channel and subscribe user to their channel
     public void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel
@@ -275,7 +299,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         }
     }
 
-
+    // FireBase Message to user topic when sending sticker
     public void sendStickertoUserTopic(String other_user, int sticker_to_send) {
         new Thread(new Runnable() {
             @Override
@@ -288,8 +312,8 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                     jNotification.put("sound", "default");
                     jNotification.put("badge", "1");
 
-                    // Populate the Payload object.
-                    // Note that "to" is a topic, not a token representing an app instance
+                    // Populate the Payload object with our notification information
+                    // sent to topic of the user we're sending to
                     jPayload.put("to", "/topics/" + other_user);
                     jPayload.put("priority", "high");
                     jPayload.put("notification", jNotification);
@@ -297,26 +321,24 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                     e.printStackTrace();
                 }
 
-                final String resp = Utils.fcmHttpConnection(SERVER_KEY, jPayload);
+                final String messageResponse = Utils.fcmHttpConnection(SERVER_KEY, jPayload);
                 Log.d(TAG, "STICKER SENT TO " + other_user);
-                Log.d(TAG, resp);
-                //Utils.postToastMessage("Status from Server: " + resp, getApplicationContext());
+                Log.d(TAG, messageResponse);
             }
         }).start();
     }
 
+    // Subscribe a user to their own topic so they can receive notifications when they get messages
     public void subscribeToMyMessages() {
         FirebaseMessaging.getInstance().subscribeToTopic(my_username)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        String msg = "Subscribed to "+my_username;
+                        String msg = "Subscribed to " + my_username;
                         if (!task.isSuccessful()) {
                             msg = "Failed to subscribe to "+my_username;
-                            Toast.makeText(ReceivedActivity.this, "Something is wrong!", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(ReceivedActivity.this, msg, Toast.LENGTH_SHORT).show();
                         }
+                        Toast.makeText(ReceivedActivity.this, msg, Toast.LENGTH_SHORT).show();
                     }
                 });
     }
