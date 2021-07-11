@@ -432,6 +432,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         setNumberOfStickersListener();
     }
 
+    // sets listener for updates to number of stickers sent
     public void setNumberOfStickersListener(){
         myUserRef = database.getReference("Users/"+my_username);
         myUserRef.addValueEventListener(new ValueEventListener() {
@@ -453,6 +454,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         });
     }
 
+    // sets listener for changes to received history; updates the messages received on device
     public void setReceivedHistoryListener(){
         myUserHistoryListener = new ChildEventListener() {
             @Override
@@ -461,9 +463,12 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                 Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
                 StickerMessage message = dataSnapshot.getValue(StickerMessage.class);
                 Log.d(TAG, "onChildAdded:" + message.username);
-                stickerHistory.add(0, message);
-                receivedStickerAdapter.notifyItemInserted(0);
 
+                // Add new message from the db to this device's stickerhistory
+                stickerHistory.add(0, message);
+
+                // update recyclerView adapter to add the new message
+                receivedStickerAdapter.notifyItemInserted(0);
             }
 
             @Override
