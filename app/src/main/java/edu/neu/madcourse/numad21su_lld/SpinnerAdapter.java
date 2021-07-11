@@ -8,8 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-//TODO https://abhiandroid.com/ui/custom-spinner-examples.html
-// Add a linear layout for the spinner itself and I think then this will work
+// Reference: https://abhiandroid.com/ui/custom-spinner-examples.html
 public class SpinnerAdapter extends ArrayAdapter<String> {
     private Context ctx;
     private String[] contentArray;

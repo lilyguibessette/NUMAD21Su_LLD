@@ -1,7 +1,7 @@
 package edu.neu.madcourse.numad21su_lld.fcm_server;
 
 
-//TODO Study https://github.com/firebase/quickstart-android
+// reference: https://github.com/firebase/quickstart-android
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -17,8 +17,6 @@ import com.google.firebase.messaging.RemoteMessage;
 import edu.neu.madcourse.numad21su_lld.R;
 import edu.neu.madcourse.numad21su_lld.ReceivedActivity;
 
-
-//TODO SET THIS UP?
 public class FCMServer extends FirebaseMessagingService {
     private static final String TAG = FCMServer.class.getSimpleName();
     private static final String CHANNEL_ID = "CHANNEL_ID";

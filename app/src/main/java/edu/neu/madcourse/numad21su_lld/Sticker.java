@@ -22,8 +22,4 @@ public class Sticker {
     public int getIMG_id() {
         return IMG_id;
     }
-
-    public void setIMG_id(int IMG_id) {
-        this.IMG_id = IMG_id;
-    }
 }

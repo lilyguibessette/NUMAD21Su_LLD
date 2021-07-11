@@ -27,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
     public String my_username;
     private static final String USERNAME = "USERNAME";
     private static String CLIENT_REGISTRATION_TOKEN;
-    //TODO change this from hardcode to a getter/resource or something
     private static String SERVER_KEY = "key=AAAA5-WnK0Y:APA91bGSNkJBv6lna--2EgJvdjxNtxt1eUc8yTKroB8nKJ3Tq_VSrWjSDFJ4ydON6OxM5sRr8QRNcnnZAXiTTzTL6dib9_XJIJEGe75h0oHKjrbvJMENomYQuZZUq0OiDrksuKPffK74\t\n";
     private User userObject;
     private Integer[] labels;
@@ -73,7 +72,6 @@ public class MainActivity extends AppCompatActivity {
                 my_username = ((EditText) findViewById(R.id.enter_username)).getText().toString();
                 Intent intent = new Intent(MainActivity.this, ReceivedActivity.class);
                 // Write a message to the database
-                // TODO fix because this overwrites all past history -- fixed i think
                 login_user();
                 // Store the userName in shared preferences to skip login if already done
                 SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE);
