@@ -19,7 +19,7 @@ import edu.neu.madcourse.numad21su_lld.ReceivedActivity;
 
 
 //TODO SET THIS UP?
-public class FCMServer  extends FirebaseMessagingService {
+public class FCMServer extends FirebaseMessagingService {
     private static final String TAG = FCMServer.class.getSimpleName();
     private static final String CHANNEL_ID = "CHANNEL_ID";
     private static final String CHANNEL_NAME = "CHANNEL_NAME";
@@ -80,12 +80,11 @@ public class FCMServer  extends FirebaseMessagingService {
             }
         }
     }
-    
 
     /**
      * Create and show a simple notification containing the received FCM message.
      *
-     * @param remoteMessageNotification FCM message  received.
+     * @param remoteMessageNotification FCM message received.
      */
     private void showNotification(RemoteMessage.Notification remoteMessageNotification) {
 

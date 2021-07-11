@@ -2,10 +2,8 @@ package edu.neu.madcourse.numad21su_lld;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -23,7 +21,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -41,8 +38,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.FirebaseMessagingService;
-import com.google.firebase.messaging.RemoteMessage;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -180,7 +175,6 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         if (isValidUsername(other_username)) {
             sendDialog.dismiss();
             sendStickertoUserTopic(other_username, sticker_to_send);
-            sendSticker(other_username, sticker_to_send);
             sendStickerMessageToDB(other_username, sticker_to_send);
             View parentLayout = findViewById(android.R.id.content);
             Snackbar.make(parentLayout, R.string.send_sticker_confirm, Snackbar.LENGTH_SHORT)
@@ -274,11 +268,8 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         final View account_info_view = getLayoutInflater().inflate(R.layout.account_info, null);
         Button back_button = account_info_view.findViewById(R.id.back_button);
         TextView tv_username = account_info_view.findViewById(R.id.user_stats);
-        //TextView tv_number_sent = account_info_view.findViewById(R.id.my_number_sent);
-        //TextView tv_token = account_info_view.findViewById(R.id.my_token);
         tv_username.setText("Way to go!\n" + my_username + " has sent " + my_number_sent + " stickers");
-        //tv_token.setText(my_token);:
-        //tv_number_sent.setText(String.valueOf(my_number_sent));
+
         dialogBuilder.setView(account_info_view);
         AlertDialog dialog = dialogBuilder.create();
         dialog.show();
@@ -308,8 +299,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                 JSONObject jPayload = new JSONObject();
                 JSONObject jNotification = new JSONObject();
                 try {
-
-                    jNotification.put("title", "New Sticker from " + my_username);
+                    jNotification.put("title", "New Sticker from "+ my_username);
                     jNotification.put("body", sticker_to_send);
                     jNotification.put("sound", "default");
                     jNotification.put("badge", "1");
@@ -347,42 +337,7 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                         }
                     }
                 });
-
     }
-
-
-    public void sendSticker(String other_username, int sticker) {
-        /*new Thread(new Runnable() {
-            @Override
-            public void run() {
-                FirebaseDatabase database = FirebaseDatabase.getInstance();
-                DatabaseReference myUserRef = database.getReference("Users/"+other_username);
-                // Prepare intent which is triggered if the
-                // notification is selected
-                Intent intent = new Intent(ReceivedActivity.this, ReceiveNotificationActivity.class);
-                PendingIntent pIntent = PendingIntent.getActivity(ReceivedActivity.this, (int) System.currentTimeMillis(), intent, 0);
-                PendingIntent callIntent = PendingIntent.getActivity(ReceivedActivity.this, (int) System.currentTimeMillis(),
-                       new Intent(ReceivedActivity.this, ReceiveNotificationActivity.class), 0);
-                // Build notification
-                // Need to define a channel ID after Android Oreo
-                String channelId = other_username;
-                NotificationCompat.Builder notifyBuild = new NotificationCompat.Builder(ReceivedActivity.this, channelId)
-                        //"Notification icons must be entirely white."
-                        .setSmallIcon(R.drawable.muncha_crunch) // get resources sticker
-                        .setContentTitle("You got a new sticker from " + my_username)
-                        .setPriority(NotificationCompat.PRIORITY_HIGH)
-                        .setLargeIcon(BitmapFactory.decodeResource(getResources(),sticker))
-                        // hide the notification after its selected
-                        .setAutoCancel(true)
-                        .addAction(sticker, "Open Muncha Crunch", callIntent)
-                        .setContentIntent(pIntent);
-                NotificationManagerCompat notificationManager = NotificationManagerCompat.from(ReceivedActivity.this);
-                // // notificationId is a unique int for each notification that you must define
-                notificationManager.notify(0, notifyBuild.build());
-            }
-        }).start();*/
-    }
-
 
     private void sendStickerMessageToDB(String other_username, int sticker) {
         new Thread(new Runnable() {
@@ -450,37 +405,6 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         }).start();
     }
 
-/*
-    public void sendStickerToken(String targetToken, String sticker) {
-        JSONObject jPayload = new JSONObject();
-        JSONObject jNotification = new JSONObject();
-        JSONObject jdata = new JSONObject();
-        try {
-            jNotification.put("title", "New message from "+my_username);
-            jNotification.put("body", my_username +" sent you a "+sticker );
-            jNotification.put("sound", "default");
-            jNotification.put("badge", "1"); // sticker? convert to image
-            *//*
-            // We can add more details into the notification if we want.
-            // We happen to be ignoring them for this demo.
-            jNotification.put("click_action", "OPEN_ACTIVITY_1");
-            *//*
-            jdata.put("title", "data title from 'sendStickerToken'");
-            jdata.put("content", "data content from 'sendStickerToken'");
-            jPayload.put("to", targetToken);
-            jPayload.put("priority", "high");
-            jPayload.put("notification", jNotification);
-            jPayload.put("data", jdata);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        final String resp = Utils.stickerHttpConnection(SERVER_KEY, jPayload);
-        handler.post(() -> {Toast.makeText(ReceivedActivity.this, "Status from Server: " + resp, Toast.LENGTH_SHORT).show();});
-    }
-        */
-
     /**
      * LISTENERS FOR DATA CHANGES
      * - Listen for change for number of stickers sent
@@ -526,39 +450,8 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
                 Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
                 StickerMessage message = dataSnapshot.getValue(StickerMessage.class);
                 Log.d(TAG, "onChildAdded:" + message.username);
-
-                /*
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            FirebaseDatabase database = FirebaseDatabase.getInstance();
-                            // Prepare intent which is triggered if the
-                            // notification is selected
-                            Intent intent = new Intent(ReceivedActivity.this, ReceiveNotificationActivity.class);
-                            PendingIntent pIntent = PendingIntent.getActivity(ReceivedActivity.this, (int) System.currentTimeMillis(), intent, 0);
-                            PendingIntent callIntent = PendingIntent.getActivity(ReceivedActivity.this, (int) System.currentTimeMillis(),
-                                    new Intent(ReceivedActivity.this, ReceiveNotificationActivity.class), 0);
-                            // Build notification
-                            // Need to define a channel ID after Android Oreo
-                            String channelId = "Muncha_Crunch_Channel";
-                            NotificationCompat.Builder notifyBuild = new NotificationCompat.Builder(ReceivedActivity.this, channelId)
-                                    //"Notification icons must be entirely white."
-                                    .setSmallIcon(R.drawable.muncha_crunch) // get resources sticker
-                                    .setContentTitle("You got a new sticker from " + message.username)
-                                    .setPriority(NotificationCompat.PRIORITY_HIGH)
-                                    .setLargeIcon(BitmapFactory.decodeResource(getResources(), message.sticker_id))
-                                    // hide the notification after its selected
-                                    .setAutoCancel(true)
-                                    .addAction(message.sticker_id, "Open Muncha Crunch", callIntent)
-                                    .setContentIntent(pIntent);
-                            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(ReceivedActivity.this);
-                            // // notificationId is a unique int for each notification that you must define
-                            notificationManager.notify(0, notifyBuild.build());
-                        }
-                    }).start();
-                    */
-                    stickerHistory.add(0, message);
-                    receivedStickerAdapter.notifyItemInserted(0);
+                stickerHistory.add(0, message);
+                receivedStickerAdapter.notifyItemInserted(0);
 
             }
 
@@ -621,34 +514,6 @@ public class ReceivedActivity extends AppCompatActivity implements SendStickerDi
         allUsersRef.addChildEventListener(validatedUsersListener);
     }
 
-    /**
-     * Create and show a simple notification containing the received FCM message.
-     *
-     * @param remoteMessageNotification FCM message  received.
-     */
-    private void showNotification(RemoteMessage.Notification remoteMessageNotification) {
-
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
-                PendingIntent.FLAG_ONE_SHOT);
-
-        Notification notification;
-        NotificationCompat.Builder builder;
-        NotificationManager notificationManager = getSystemService(NotificationManager.class);
-
-
-        builder = new NotificationCompat.Builder(this, "Muncha_Crunch_Channel");
-        notification = builder.setContentTitle(remoteMessageNotification.getTitle())
-                .setContentText(remoteMessageNotification.getBody())
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setAutoCancel(true)
-                .setContentIntent(pendingIntent)
-                .build();
-        notificationManager.notify(0, notification);
-
-    }
 }
 
 
